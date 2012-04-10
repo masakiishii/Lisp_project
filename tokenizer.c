@@ -3,6 +3,7 @@
 
 char **token(void)
 {
+
   char *p = (char *)readline(">>>");
   
   char *p1 = p;
@@ -13,13 +14,15 @@ char **token(void)
   while(*p1 != '\0'){
 
 	switch(*p1){
-	case '('; case ')': token[i++] = (char *)malloc(sizeof(char));
-
+	case '(': 
+	case ')': 
+	  token[i++] = (char *)malloc(sizeof(char));
 	  **token = *p1;
 	  p1++;
 	  break;
 
-	case ' ': case '\n': token[i] = (char *)malloc(sizeof(char)*(p1-p2));
+	case ' ': case '\n': 
+	  token[i] = (char *)malloc(sizeof(char)*(p1-p2));
 	  memcpy(token[i],p2,p1-p2);
 	  p1++;
 	  p2 = p1;
