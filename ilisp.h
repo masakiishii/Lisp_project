@@ -47,7 +47,7 @@ typedef struct cons_t {
   struct cons_t *cdr;
 } cons_t;
 
-char **token(void);
+char **tokenize(void);
 cons_t *parse(char **);
-cons_t *read(void);
+cons_t *iread(void);
 void print(cons_t *,int);

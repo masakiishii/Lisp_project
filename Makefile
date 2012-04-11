@@ -16,19 +16,19 @@ $(TARGET): $(OBJS)
 	$(CC) $(LDLIBS) -o $@ $^
 #	$(CC) $(CFLAGS) $(LDLIBS) -o $(TARGET) $^
 
-main.o: main.c
+main.o: main.c ilisp.h
 	$(CC) $(CFLAGS) -c $^
 
-tokenizer.o: tokenizer.c
+tokenizer.o: tokenizer.c ilisp.h
 	$(CC) $(CFLAGS) -c $^
 
-parser.o: parser.c
+parser.o: parser.c ilisp.h
 	$(CC) $(CFLAGS) -c $^
 
-print.o: print.c
+print.o: print.c ilisp.h
 	$(CC) $(CFLAGS) -c $^
 
-read.o: read.c
+read.o: read.c ilisp.h
 	$(CC) $(CFLAGS) -c $^
 
 .PHONY: clean

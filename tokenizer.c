@@ -1,9 +1,9 @@
 #include "ilisp.h"
 
 
-char **token(void)
-{
 
+char **tokenize(void)
+{
   char *p = (char *)readline(">>>");
   
   char *p1 = p;
@@ -14,34 +14,41 @@ char **token(void)
   while(*p1 != '\0'){
 
 	switch(*p1){
+
+	case ')':
+	case ' ':
+	case '\n':
+		if(*p1 == ')'){
+			token[i] = strndup(p2, p1-p2-1);
+			i+=1;
+			token[i] = strndup(p1,1);
+			p1+=1;
+			p2=p1;
+		}else{
+			token[i] = strndup(p2,p1-p2);
+			i+=1;
+			p1+=1;
+			p2=p1;
+		}
+		break;
+
 	case '(': 
-	case ')': 
-	  token[i++] = (char *)malloc(sizeof(char));
-	  **token = *p1;
-	  p1++;
-	  break;
-
-	case ' ': case '\n': 
-	  token[i] = (char *)malloc(sizeof(char)*(p1-p2));
-	  memcpy(token[i],p2,p1-p2);
-	  p1++;
-	  p2 = p1;
-	  i++;
-	  break;
-
+	  //token[i++] = (char *)malloc(sizeof(char));
+	  //**token = *p1;
+          token[i] = strndup(p1, 1);
+          i++;
+		  p1++;
+		  p2++;
+		  break;
 
 	default : p1++;
 	}
   }
+  token[i] = (char *)malloc(sizeof(char));
+  *token[i] = '\0';
   return token;
 }
-
-/*    if(*p == ' '){
-      p++;
-    }else if(isalnum(*p)){
-	  pars[i++] = p;
-	  while(isalnum(*p))
-			printf("%c",*p++);
+/*("%c",*p++);
   
       printf("\n");
     }else if((*p != ' ') && (!isalnum(*p))){
