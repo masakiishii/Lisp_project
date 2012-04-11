@@ -9,7 +9,8 @@ int main(int argc,char **argv)
   tree = iread();
   //	eval();
   print(tree,0);
-  
+
+
   printf("\n");
 
   return 0;

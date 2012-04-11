@@ -48,6 +48,7 @@ typedef struct cons_t {
 } cons_t;
 
 char **tokenize(void);
-cons_t *parse(char **);
+cons_t *parse(char **,int);
 cons_t *iread(void);
 void print(cons_t *,int);
+void print_test(char **);

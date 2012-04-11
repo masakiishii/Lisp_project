@@ -1,6 +1,6 @@
 #include "ilisp.h"
 
-cons_t *parse(char **t)
+cons_t *parse(char **t,int n)
 {
 	if((**t) == ')'){
 
@@ -8,11 +8,11 @@ cons_t *parse(char **t)
 
   }
 
-	char **point = t;
+  char **point = t;
   cons_t *head = (cons_t *)malloc(sizeof(cons_t));
   cons_t *p=head;
 
-  int n = sizeof(t)/sizeof(*t);
+  // int n = sizeof(point)/sizeof(*point);
   int counter = 0;
   int i;
 
@@ -30,14 +30,14 @@ cons_t *parse(char **t)
 	case '(' :
 	  p->type = T_BEGIN;
 	  t++;
-      p->car = parse(t);
+      p->car = parse(t,n-1);
 	  do{
 		  t++;
 		  if(**t == ')')
 			  counter--;
 	  }while(counter);
 
-	  p->cdr = parse(t);  
+	  p->cdr = parse(t,n-1);  
 	  break;
 	   
 
@@ -52,19 +52,19 @@ cons_t *parse(char **t)
 	case '+' :
 	  p->type = OP_ADD;
 	  t++;
-	  p->cdr = parse(t); 
+	  p->cdr = parse(t,n-1); 
 	  break;
 
 	case '*' :
 	  p->type = OP_MULT;
 	  t++;
-	  p->cdr = parse(t); 
+	  p->cdr = parse(t,n-1); 
 	  break;
 
 	case '/' :
 	  p->type = OP_SUB;
 	  t++;
-	  p->cdr = parse(t); 
+	  p->cdr = parse(t,n-1); 
 	  break;
 
 	default :
@@ -76,7 +76,7 @@ cons_t *parse(char **t)
 		p->type = T_STRING;
 		p->svalue = *t;
 		t++;
-		p->cdr = parse(t);
+		p->cdr = parse(t,n-1);
 	  } 
 	  break;
 	}

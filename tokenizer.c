@@ -16,26 +16,36 @@ char **tokenize(void)
 	switch(*p1){
 
 	case ')':
-	case ' ':
-	case '\n':
-		if(*p1 == ')'){
-			token[i] = strndup(p2, p1-p2-1);
+		if( *(p1-1) != ' '){
+			token[i] = strndup(p2,p1-p2);
+			token[i][p1-p2+1] = '\0';
 			i+=1;
 			token[i] = strndup(p1,1);
+			token[i][2] = '\0';
+			i+=1;
 			p1+=1;
 			p2=p1;
 		}else{
+			token[i] = strndup(p1,1);
+			token[i][2] = '\n';
+			i+=1;
+		}
+		break;
+
+	case ' ':
+	case '\n':
 			token[i] = strndup(p2,p1-p2);
+			token[i][p1-p2+1] = '\0';
 			i+=1;
 			p1+=1;
 			p2=p1;
-		}
 		break;
 
 	case '(': 
 	  //token[i++] = (char *)malloc(sizeof(char));
 	  //**token = *p1;
           token[i] = strndup(p1, 1);
+		  token[i][2] = '\0';
           i++;
 		  p1++;
 		  p2++;
@@ -44,10 +54,32 @@ char **tokenize(void)
 	default : p1++;
 	}
   }
-  token[i] = (char *)malloc(sizeof(char));
-  *token[i] = '\0';
+  token[i] = NULL;
+
+//  token[i] = (char *)malloc(sizeof(char));
+//  *token[i] = '\0';
+
+//  print_test(token);
+
   return token;
 }
+
+//void print_test(char **pt){
+//	int i = 0;
+//	while(pt) {
+//		printf("%s\n", pt[i]);
+//		i++;
+//	}
+//}
+//
+//
+//
+//	int i;
+//
+//	for(i=0;i<n;i++)
+//		printf("%s\n",pt[i]);
+//
+//}
 /*("%c",*p++);
   
       printf("\n");
