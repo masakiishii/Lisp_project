@@ -30,25 +30,29 @@ typedef enum Type {
   OP_SUB,
   OP_MULT,
   OP_DEV,
-  T_SPACE,
-  T_COMMA,
+  /*  T_SPACE,*/
+/*  T_COMMA,*/
   T_NUMBER,
   T_STRING
 } Type;
 
 typedef struct cons_t {
-  Type type;
-  //  Type type;
-  union{
-	struct cons_t *car;
-	int ivalue;
-	char *svalue;
+	Type type;
+	union{
+		struct cons_t *car;
+		int ivalue;
+		char *svalue;
   };
   struct cons_t *cdr;
 } cons_t;
 
 char **tokenize(void);
-cons_t *parse(char **,int);
+cons_t *parse(char **);
 cons_t *iread(void);
-void print(cons_t *,int);
+void print_tree(cons_t *,int);
 void print_test(char **);
+int eval_tree(cons_t *);
+
+/* global */
+extern char **tree_pointer;
+

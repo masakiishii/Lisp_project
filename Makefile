@@ -1,13 +1,14 @@
 CC=gcc
 TARGET=ilisp
 LDLIBS=-lreadline
-CFLAGS=-g3 -O0
+CFLAGS=-g3 -O0 -W -Wall
 OBJS=\
 	main.o \
     tokenizer.o \
     parser.o \
 	print.o \
-	read.o
+	read.o \
+	eval.o
 
 .PHONY: all
 all:	$(TARGET)
@@ -31,6 +32,13 @@ print.o: print.c ilisp.h
 read.o: read.c ilisp.h
 	$(CC) $(CFLAGS) -c $^
 
+eval.o: eval.c ilisp.h
+	$(CC) $(CFLAGS) -c $^
+
 .PHONY: clean
 clean:
 	$(RM) $(TARGET) $(OBJS)
+
+.PHONY: test
+test:
+	./$(TARGET) < test.lisp

@@ -1,85 +1,79 @@
 #include "ilisp.h"
 
-cons_t *parse(char **t,int n)
+char **tree_pointer = NULL;
+
+cons_t *parse(char **t)
 {
-	if((**t) == ')'){
+	if( (*t) == NULL){
 
-	return NULL;
+		return NULL;
+	}
 
-  }
-
-  char **point = t;
-  cons_t *head = (cons_t *)malloc(sizeof(cons_t));
-  cons_t *p=head;
-
-  // int n = sizeof(point)/sizeof(*point);
-  int counter = 0;
-  int i;
-
-  for(i=0;i<n;i++){
-	  if(**point == '(')
-		  counter++;
-	  point++;
-  }
-
-
-  for(i=0;i<n;i++){
+	if((**t) == ')') {
+		
+		return NULL;
+		
+	}
+	
+	cons_t *head = (cons_t *)malloc(sizeof(cons_t));
 
 	switch(**t){
 	
 	case '(' :
-	  p->type = T_BEGIN;
-	  t++;
-      p->car = parse(t,n-1);
-	  do{
-		  t++;
-		  if(**t == ')')
-			  counter--;
-	  }while(counter);
-
-	  p->cdr = parse(t,n-1);  
-	  break;
+		head->type = T_BEGIN;
+		tree_pointer++;
+		head->car = parse(tree_pointer);
+		tree_pointer++;
+		head->cdr = parse(tree_pointer);  
+		break;
 	   
-
 	case '-' :
-	  if( isalnum(*(*t+1))){
-		p->type = T_NUMBER;
-        p->ivalue = atoi(*t);
-  		return head;
-	  } 
-	  break;
+		if(isalnum(*(*t+1))){
+			head->type = T_NUMBER;
+			head->ivalue = strtol(*t, NULL, 10);
+			tree_pointer++;
+			head->cdr = parse(tree_pointer);
+//TODO strtol
+		}else{
+			head->type = OP_SUB;
+			tree_pointer++;
+			head->cdr = parse(tree_pointer);
+		}
+		break;
 
 	case '+' :
-	  p->type = OP_ADD;
-	  t++;
-	  p->cdr = parse(t,n-1); 
-	  break;
+		head->type = OP_ADD;
+		tree_pointer++;
+		head->cdr = parse(tree_pointer); 
+		break;
 
 	case '*' :
-	  p->type = OP_MULT;
-	  t++;
-	  p->cdr = parse(t,n-1); 
-	  break;
+		head->type = OP_MULT;
+		tree_pointer++;
+		head->cdr = parse(tree_pointer); 
+		break;
 
 	case '/' :
-	  p->type = OP_SUB;
-	  t++;
-	  p->cdr = parse(t,n-1); 
-	  break;
+		head->type = OP_DEV;
+		tree_pointer++;
+		head->cdr = parse(tree_pointer); 
+		break;
 
 	default :
-	  if(isdigit(**t)){
-		p->type = T_NUMBER;
-		p->ivalue = atoi(*t);
-  		return head;
-	  }else if(isalpha(**t)){
-		p->type = T_STRING;
-		p->svalue = *t;
-		t++;
-		p->cdr = parse(t,n-1);
-	  } 
-	  break;
+		if(isdigit(**t)){
+			head->type = T_NUMBER;
+			head->ivalue = strtol(*t, NULL, 10);
+			tree_pointer++;
+			head->cdr = parse(tree_pointer);
+//strtol()
+		}else if(isalpha(**t)){
+			head->type = T_STRING;
+			head->svalue = *t;
+			tree_pointer++;
+			head->cdr = parse(tree_pointer);
+		} 
+		break;
 	}
-  }
-  return head;
+
+	return head;
 }
