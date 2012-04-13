@@ -1,19 +1,15 @@
 #include <stdio.h>
 #include <readline/readline.h>
+#include <readline/history.h>
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
 
-//#define BEGIN '('
-//#define OP_ADD '+'
-//#define OP_SUB '-'
-//#define END ')'
 //#define SPACE ' '
 //#define COMMA ','
 //#define NUMBER 'n'
 //#define STRING 's'
-//#define MULT '*'
-//#define DEV '/'
+
 //#define L_THAN '<'
 //#define M_THAN '>'
 //#define VARIABLE 'v'
@@ -30,6 +26,8 @@ typedef enum Type {
   OP_SUB,
   OP_MULT,
   OP_DEV,
+  L_THAN,
+  M_THAN,
   /*  T_SPACE,*/
 /*  T_COMMA,*/
   T_NUMBER,
@@ -55,4 +53,5 @@ int eval_tree(cons_t *);
 
 /* global */
 extern char **tree_pointer;
+extern int than_flag;
 

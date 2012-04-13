@@ -3,8 +3,15 @@
 char **tokenize(void)
 {
 	char *p = (char *)readline(">>>");
+	add_history(p);
+	char str_bye[] = "(bye)";
+	char str_exit[] = "(exit)";
+
+	if( (strcmp(str_bye, p) == 0) || (strcmp(str_exit, p) == 0) ){
+		return NULL;
+	}else{
   
-n	char *p1 = p;
+	char *p1 = p;
 	char *p2 = p;
 	char **token = (char **)malloc(sizeof(char *)*1024);    
 	int i=0;
@@ -60,6 +67,7 @@ n	char *p1 = p;
 //  print_test(token);
 
 	return token;
+	}
 }
 
 void print_test(char **pt){

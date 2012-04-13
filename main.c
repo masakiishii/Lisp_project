@@ -4,18 +4,28 @@
 
 int main(void)
 {
-  cons_t *tree_head;
-  int answer;
+	cons_t *tree_head;
+	int answer;
 
-  tree_head = iread();
+	while(1){
+		tree_head = iread();	
+		if(tree_head == NULL){
+			break;
+		}
 
-  print_tree(tree_head, 0);
+		print_tree(tree_head, 0);
+		answer = eval_tree(tree_head);
 
-  answer = eval_tree(tree_head);
+		if( (than_flag == 1) && (answer == 1) ){
+			printf("T\n");
+		}else if( (than_flag == 1) && (answer == 0) ){
+			printf("Nil\n");
+		}else{
+			printf("%d\n", answer);
+		}
+		
+	}
+	printf("bye\n");
 
-  printf("%d\n", answer);
-
-  printf("\n");
-
-  return 0;
+	return 0;
 }

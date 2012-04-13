@@ -24,7 +24,7 @@ cons_t *parse(char **t)
 		tree_pointer++;
 		head->car = parse(tree_pointer);
 		tree_pointer++;
-		head->cdr = parse(tree_pointer);  
+		head->cdr = NULL;
 		break;
 	   
 	case '-' :
@@ -33,7 +33,7 @@ cons_t *parse(char **t)
 			head->ivalue = strtol(*t, NULL, 10);
 			tree_pointer++;
 			head->cdr = parse(tree_pointer);
-//TODO strtol
+
 		}else{
 			head->type = OP_SUB;
 			tree_pointer++;
@@ -59,13 +59,25 @@ cons_t *parse(char **t)
 		head->cdr = parse(tree_pointer); 
 		break;
 
+	case '<' :
+		head->type = L_THAN;
+		tree_pointer++;
+		head->cdr = parse(tree_pointer);
+		break;
+
+	case '>' :
+		head->type = M_THAN;
+		tree_pointer++;
+		head->cdr = parse(tree_pointer);
+		break;
+
 	default :
 		if(isdigit(**t)){
 			head->type = T_NUMBER;
 			head->ivalue = strtol(*t, NULL, 10);
 			tree_pointer++;
 			head->cdr = parse(tree_pointer);
-//strtol()
+
 		}else if(isalpha(**t)){
 			head->type = T_STRING;
 			head->svalue = *t;
