@@ -59,7 +59,7 @@ cons_t eval_tree(cons_t *ev_head)
 		}else{
 			ev_head->ivalue = 0;
 			than_flag = FALSE_FLAG;
-			if( if_flag = IF_ON ){
+			if( if_flag == IF_ON ){
 				return *ev_head;
 			}
 			return *ev_head->cdr->cdr;
@@ -69,10 +69,16 @@ cons_t eval_tree(cons_t *ev_head)
 		if( eval_tree(ev_head->cdr).ivalue > eval_tree(ev_head->cdr->cdr).ivalue ){
 			ev_head->ivalue = 1;
 			than_flag = TRUE_FLAG;
+			if( if_flag == IF_ON ){
+				return *ev_head;
+			}
 			return *ev_head->cdr;
 		}else{
 			ev_head->ivalue = 0;
 			than_flag = FALSE_FLAG;
+			if( if_flag == IF_ON ){
+				return *ev_head;
+			}
 			return *ev_head->cdr->cdr;
 		}
 
