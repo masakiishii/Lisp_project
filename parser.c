@@ -23,8 +23,9 @@ cons_t *parse(char **t)
 		head->type = T_BEGIN;
 		tree_pointer++;
 		head->car = parse(tree_pointer);
-		tree_pointer++;
-		head->cdr = NULL;
+//		tree_pointer++;
+		head->cdr = parse(tree_pointer);
+//		head->cdr = NULL;
 		break;
 	   
 	case '-' :
@@ -79,10 +80,20 @@ cons_t *parse(char **t)
 			head->cdr = parse(tree_pointer);
 
 		}else if(isalpha(**t)){
-			head->type = T_STRING;
-			head->svalue = *t;
-			tree_pointer++;
-			head->cdr = parse(tree_pointer);
+//			if( strcmp(*t, "if") ){
+			if( strncmp(*t, "if", 3) == 0 ) {
+				head->type = T_IF;
+				head->svalue = *t;
+				tree_pointer++;
+				head->cdr = parse(tree_pointer);
+				tree_pointer++;
+				head->cdr->cdr = parse(tree_pointer);
+			}else{
+				head->type = T_STRING;
+				head->svalue = *t;
+				tree_pointer++;
+				head->cdr = parse(tree_pointer);
+			}
 		} 
 		break;
 	}

@@ -8,7 +8,8 @@ OBJS=\
     parser.o \
 	print.o \
 	read.o \
-	eval.o
+	eval.o \
+	eval_string.o
 
 .PHONY: all
 all:	$(TARGET)
@@ -33,6 +34,9 @@ read.o: read.c ilisp.h
 	$(CC) $(CFLAGS) -c $^
 
 eval.o: eval.c ilisp.h
+	$(CC) $(CFLAGS) -c $^
+
+eval_string.o: eval_string.c ilisp.h
 	$(CC) $(CFLAGS) -c $^
 
 .PHONY: clean

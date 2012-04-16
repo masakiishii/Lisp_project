@@ -31,7 +31,11 @@ typedef enum Type {
   /*  T_SPACE,*/
 /*  T_COMMA,*/
   T_NUMBER,
-  T_STRING
+  T_STRING,
+  T_IF,
+  TRUE_FLAG,
+  FALSE_FLAG,
+  ZERO_FLAG
 } Type;
 
 typedef struct cons_t {
@@ -49,9 +53,11 @@ cons_t *parse(char **);
 cons_t *iread(void);
 void print_tree(cons_t *,int);
 void print_test(char **);
-int eval_tree(cons_t *);
+cons_t eval_tree(cons_t *);
+cons_t *eval_string(cons_t *);
+
 
 /* global */
 extern char **tree_pointer;
-extern int than_flag;
+extern Type than_flag;
 

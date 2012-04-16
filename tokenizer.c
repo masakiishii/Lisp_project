@@ -39,12 +39,18 @@ char **tokenize(void)
 
 		case ' ':
 		case '\n':
-			token[i] = strndup(p2,p1-p2);
-			token[i][p1-p2] = '\0';
-			i+=1;
-			p1+=1;
-			p2=p1;
-			break;
+			if(p1 == p2){
+				p1++;
+				p2 = p1;
+				break;
+			}else{
+				token[i] = strndup(p2,p1-p2);
+				token[i][p1-p2] = '\0';
+				i+=1;
+				p1+=1;
+				p2=p1;
+				break;
+			}
 
 		case '(': 
 			//token[i++] = (char *)malloc(sizeof(char));
@@ -64,7 +70,7 @@ char **tokenize(void)
 //  token[i] = (char *)malloc(sizeof(char));
 //  *token[i] = '\0';
 
-//  print_test(token);
+	print_test(token);
 
 	return token;
 	}

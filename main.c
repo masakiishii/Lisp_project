@@ -5,7 +5,7 @@
 int main(void)
 {
 	cons_t *tree_head;
-	int answer;
+	cons_t answer_tree;
 
 	while(1){
 		tree_head = iread();	
@@ -14,14 +14,14 @@ int main(void)
 		}
 
 		print_tree(tree_head, 0);
-		answer = eval_tree(tree_head);
+		answer_tree = eval_tree(tree_head);
 
-		if( (than_flag == 1) && (answer == 1) ){
+		if( than_flag == TRUE_FLAG){
 			printf("T\n");
-		}else if( (than_flag == 1) && (answer == 0) ){
+		}else if( than_flag == FALSE_FLAG ){
 			printf("Nil\n");
 		}else{
-			printf("%d\n", answer);
+				printf("%d\n", answer_tree.ivalue);
 		}
 		
 	}
