@@ -53,8 +53,6 @@ char **tokenize(void)
 			}
 
 		case '(': 
-			//token[i++] = (char *)malloc(sizeof(char));
-			//**token = *p1;
 			token[i] = strndup(p1, 1);
 			token[i][1] = '\0';
 			i++;
@@ -66,9 +64,6 @@ char **tokenize(void)
 		}
 	}
 	token[i] = NULL;
-
-//  token[i] = (char *)malloc(sizeof(char));
-//  *token[i] = '\0';
 
 	print_test(token);
 
@@ -83,29 +78,3 @@ void print_test(char **pt){
 		i++;
 	}
 }
-//
-//
-//
-//	int i;
-//
-//	for(i=0;i<n;i++)
-//		printf("%s\n",pt[i]);
-//
-//}
-/*("%c",*p++);
-  
-  printf("\n");
-  }else if((*p != ' ') && (!isalnum(*p))){
-  if(((*p == '-') || (*p == '+')) && (isdigit(*(p+1)) != 0)){
-  pars[i++] = p;
-  printf("%c",*p++);
-  while(isdigit(*p))
-  printf("%c",*p++);
-
-  printf("\n");
-  }else{
-  pars[i++] = p;
-  printf("%c\n",*p++);
-  }
-  }
-*/

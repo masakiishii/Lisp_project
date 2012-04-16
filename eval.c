@@ -1,16 +1,12 @@
 #include "ilisp.h"
 
 Type than_flag = ZERO_FLAG;
+int if_flag = IF_OFF;
 
 cons_t eval_tree(cons_t *ev_head)
 {
-//	if(ev_head->cdr == NULL){
-//		return ev_head->ivalue;
-//	}
-
 	cons_t *eval_pointer;
-//	printf("----------\n");
-//	print_tree(ev_head,0);
+
 	switch(ev_head->type){
 
 	case T_BEGIN    :
@@ -52,21 +48,31 @@ cons_t eval_tree(cons_t *ev_head)
 			ev_head->ivalue /= eval_tree(eval_pointer).ivalue;
 		}
 		return *ev_head;
-
 	case L_THAN    :
 		if( eval_tree(ev_head->cdr).ivalue < eval_tree(ev_head->cdr->cdr).ivalue ){
+			ev_head->ivalue = 1;
 			than_flag = TRUE_FLAG;
+			if( if_flag == IF_ON ){
+				return *ev_head;
+			}
 			return *ev_head->cdr;
 		}else{
+			ev_head->ivalue = 0;
 			than_flag = FALSE_FLAG;
+			if( if_flag = IF_ON ){
+				return *ev_head;
+			}
 			return *ev_head->cdr->cdr;
 		}
 
 	case M_THAN    :
-		than_flag = 1;
 		if( eval_tree(ev_head->cdr).ivalue > eval_tree(ev_head->cdr->cdr).ivalue ){
+			ev_head->ivalue = 1;
+			than_flag = TRUE_FLAG;
 			return *ev_head->cdr;
 		}else{
+			ev_head->ivalue = 0;
+			than_flag = FALSE_FLAG;
 			return *ev_head->cdr->cdr;
 		}
 
@@ -74,6 +80,7 @@ cons_t eval_tree(cons_t *ev_head)
 		return *ev_head;
 
 	case T_IF         :
+		if_flag = IF_ON;
 		return *eval_string(ev_head);
 
 	default         :

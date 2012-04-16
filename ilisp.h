@@ -5,20 +5,6 @@
 #include <string.h>
 #include <ctype.h>
 
-//#define SPACE ' '
-//#define COMMA ','
-//#define NUMBER 'n'
-//#define STRING 's'
-
-//#define L_THAN '<'
-//#define M_THAN '>'
-//#define VARIABLE 'v'
-//#define ARGUMENT 'a'
-//#define FUNC 'f'
-//#define DEF 'd'
-//#define IF 'i'
-//#define SETQ 'S'
-
 typedef enum Type {
   T_BEGIN,
   T_END,
@@ -35,7 +21,7 @@ typedef enum Type {
   T_IF,
   TRUE_FLAG,
   FALSE_FLAG,
-  ZERO_FLAG
+  ZERO_FLAG,
 } Type;
 
 typedef struct cons_t {
@@ -60,4 +46,7 @@ cons_t *eval_string(cons_t *);
 /* global */
 extern char **tree_pointer;
 extern Type than_flag;
+extern int if_flag;
 
+#define IF_ON    1
+#define IF_OFF   0

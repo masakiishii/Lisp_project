@@ -23,9 +23,7 @@ cons_t *parse(char **t)
 		head->type = T_BEGIN;
 		tree_pointer++;
 		head->car = parse(tree_pointer);
-//		tree_pointer++;
 		head->cdr = parse(tree_pointer);
-//		head->cdr = NULL;
 		break;
 	   
 	case '-' :
