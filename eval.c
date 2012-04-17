@@ -79,14 +79,17 @@ cons_t eval_tree(cons_t *ev_head)
 			if( if_flag == IF_ON ){
 				return *ev_head;
 			}
+
 			return *ev_head->cdr->cdr;
 		}
 
 	case  T_NUMBER  :
 		return *ev_head;
 
-	case T_IF         :
-		if_flag = IF_ON;
+	case  T_IF      : if_flag = IF_ON;
+	case  T_SETQ    :
+	case  T_DEFUN   :
+	case  T_STRING  :
 		return *eval_string(ev_head);
 
 	default         :

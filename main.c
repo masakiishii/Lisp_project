@@ -20,10 +20,10 @@ int main(void)
 			printf("T\n");
 		}else if( (than_flag == FALSE_FLAG) && (if_flag == IF_OFF) ){
 			printf("Nil\n");
-		}else{
+		}else if( setq_flag == 0 ){
 				printf("%d\n", answer_tree.ivalue);
 		}
-		
+		setq_flag = 0;
 		than_flag = ZERO_FLAG;
 		if_flag = IF_OFF;
 	}

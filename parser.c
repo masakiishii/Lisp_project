@@ -1,6 +1,7 @@
 #include "ilisp.h"
 
 char **tree_pointer = NULL;
+int setq_flag = 0;
 
 cons_t *parse(char **t)
 {
@@ -78,7 +79,6 @@ cons_t *parse(char **t)
 			head->cdr = parse(tree_pointer);
 
 		}else if(isalpha(**t)){
-//			if( strcmp(*t, "if") ){
 			if( strncmp(*t, "if", 3) == 0 ) {
 				head->type = T_IF;
 				head->svalue = *t;
@@ -86,6 +86,15 @@ cons_t *parse(char **t)
 				head->cdr = parse(tree_pointer);
 				tree_pointer++;
 				head->cdr->cdr = parse(tree_pointer);
+			}else if( strncmp(*t, "setq", 5) == 0){
+				setq_flag = 1;
+				head->type = T_SETQ;
+				tree_pointer++;
+				head->cdr = parse(tree_pointer);
+			}else if( strncmp(*t, "defun", 6) == 0){
+				head->type = T_DEFUN;
+				tree_pointer++;
+				head->cdr = parse(tree_pointer);
 			}else{
 				head->type = T_STRING;
 				head->svalue = *t;
