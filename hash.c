@@ -45,10 +45,11 @@ cons_t *search_hash(cons_t *search_head)
 	p = hashtable[hash(str[0])];
 
 	while(p != NULL && flag){
-		if(strcmp(p->cons_t_hash.svalue, str))
+		if(strcmp(p->svalue, str))
 			p = p->next;
 		else
 			flag=0;
 	}
+//	p->ivalue = p->val;
 	return p;
 }

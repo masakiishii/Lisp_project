@@ -5,7 +5,6 @@ cons_t *eval_string(cons_t *string_head)
 	cons_t *st_ptr = string_head->cdr;
 	int bucket;
 
-
 	switch( string_head->type ){
 
 	case T_IF    :

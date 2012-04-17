@@ -6,6 +6,7 @@ int if_flag = IF_OFF;
 cons_t eval_tree(cons_t *ev_head)
 {
 	cons_t *eval_pointer;
+	cons_t str_val_cons;
 
 	switch(ev_head->type){
 
@@ -89,8 +90,13 @@ cons_t eval_tree(cons_t *ev_head)
 	case  T_IF      : if_flag = IF_ON;
 	case  T_SETQ    :
 	case  T_DEFUN   :
-	case  T_STRING  :
 		return *eval_string(ev_head);
+
+
+	case  T_STRING  :
+		str_val_cons = *eval_string(ev_head);
+		str_val_cons.ivalue = str_val_cons.val;
+		return str_val_cons;
 
 	default         :
 		return *ev_head;
