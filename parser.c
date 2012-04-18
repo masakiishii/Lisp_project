@@ -84,8 +84,8 @@ cons_t *parse(char **t)
 				head->svalue = *t;
 				tree_pointer++;
 				head->cdr = parse(tree_pointer);
-				tree_pointer++;
-				head->cdr->cdr = parse(tree_pointer);
+//				tree_pointer++;
+//				head->cdr->cdr = parse(tree_pointer);
 			}else if( strncmp(*t, "setq", 5) == 0){
 				setq_flag = 1;
 				head->type = T_SETQ;
