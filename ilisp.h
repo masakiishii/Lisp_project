@@ -29,15 +29,15 @@ typedef enum Type {
 } Type;
 
 typedef struct cons_t {
-	Type type;
-	int val;
-	union{
-		struct cons_t *car;
-		int ivalue;
-		char *svalue;
-	};
-	struct cons_t *cdr;
-	struct cons *next;
+    Type type;
+    int val;
+    union{
+        struct cons_t *car;
+        int ivalue;
+        char *svalue;
+    };
+    struct cons_t *cdr;
+    struct cons *next;
 } cons_t;
 
 
@@ -63,3 +63,5 @@ extern int setq_flag;
 
 #define IF_ON    1
 #define IF_OFF   0
+
+

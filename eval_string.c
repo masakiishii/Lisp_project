@@ -19,7 +19,8 @@ cons_t *eval_string(cons_t *string_head)
 		return string_head;
 
 	case T_DEFUN   :
-
+		hash_val(string_head->cdr);
+		return string_head;
 
 	case T_STRING  :
 		return search_hash(string_head);

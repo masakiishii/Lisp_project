@@ -89,6 +89,8 @@ cons_t eval_tree(cons_t *ev_head)
 
 	case  T_IF      : if_flag = IF_ON;
 	case  T_SETQ    :
+		return *eval_string(ev_head);
+
 	case  T_DEFUN   :
 		return *eval_string(ev_head);
 

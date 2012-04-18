@@ -21,7 +21,7 @@ char **tokenize(void)
 		switch(*p1){
 
 		case ')':
-			if( *(p1-1) != ' '){
+			if( (*(p1-1) != ' ') && (*(p1-1) != ')') ){
 				token[i] = strndup(p2,p1-p2);
 				token[i][p1-p2] = '\0';
 				i+=1;
@@ -32,8 +32,10 @@ char **tokenize(void)
 				p2=p1;
 			}else{
 				token[i] = strndup(p1,1);
-				token[i][1] = '\n';
+				token[i][1] = '\0';
 				i+=1;
+				p1++;
+				p2=p1;
 			}
 			break;
 

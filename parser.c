@@ -11,7 +11,7 @@ cons_t *parse(char **t)
 	}
 
 	if((**t) == ')') {
-		
+		tree_pointer++;
 		return NULL;
 		
 	}

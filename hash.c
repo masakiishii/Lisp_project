@@ -50,6 +50,5 @@ cons_t *search_hash(cons_t *search_head)
 		else
 			flag=0;
 	}
-//	p->ivalue = p->val;
 	return p;
 }
