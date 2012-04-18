@@ -16,6 +16,8 @@ void print_tree(cons_t *tree, int n)
 		case T_BEGIN    :
 			if(tree->cdr != NULL) {
 				print_tree(tree->cdr, n+1);
+			}else if( (tree->cdr == NULL) && (n != 0) ){
+				print_tree(tree->cdr, n+1);
 			}
 			for(i=0;i<n;i++)
 				printf("\t");
@@ -85,6 +87,13 @@ void print_tree(cons_t *tree, int n)
 			for(i=0;i<n;i++)
 				printf("\t");
 			printf("setq\n");
+			break;
+
+		case T_DEFUN    :
+			print_tree(tree->cdr, n+1);
+			for(i=0;i<n;i++)
+				printf("\t");
+			printf("defun\n");
 			break;
 
 		case T_STRING   :
