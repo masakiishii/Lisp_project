@@ -80,25 +80,36 @@ cons_t eval_tree(cons_t *ev_head)
 			if( if_flag == IF_ON ){
 				return *ev_head;
 			}
-
 			return *ev_head->cdr->cdr;
 		}
 
 	case  T_NUMBER  :
 		return *ev_head;
 
-	case  T_IF      : if_flag = IF_ON;
+	case  T_IF      : 
+		if_flag = IF_ON;
+		if( eval_tree(ev_head->cdr).ivalue ){
+			return eval_tree(ev_head->cdr->cdr);
+		}else{
+			return eval_tree(ev_head->cdr->cdr->cdr);
+		}
+
 	case  T_SETQ    :
-	case  T_DEFUN   :
-		return *eval_string(ev_head);
+		hash_val(ev_head->cdr);
+		return *ev_head;
+
+
+//	case  T_DEFUN   :
+//		return *eval_string(ev_head);
 
 
 	case  T_STRING  :
-		str_val_cons = *eval_string(ev_head);
-		str_val_cons.ivalue = str_val_cons.val;
+		str_val_cons.ivalue = search_hash(ev_head);
+		str_val_cons.type = T_NUMBER;
 		return str_val_cons;
 
 	default         :
 		return *ev_head;
 	}
 }
+

@@ -40,6 +40,12 @@ typedef struct cons_t {
 	struct cons *next;
 } cons_t;
 
+typedef struct h_table {
+    char *symbol;
+	int i_val;
+	struct h_table *next;
+} h_table;
+
 
 char **tokenize(void);
 cons_t *parse(char **);
@@ -47,18 +53,18 @@ cons_t *iread(void);
 void print_tree(cons_t *,int);
 void print_test(char **);
 cons_t eval_tree(cons_t *);
-cons_t *eval_string(cons_t *);
 void hash_val(cons_t *);
 void makenull(cons_t *h_val[]);
-cons_t *search_hash(cons_t *);
+int search_hash(cons_t *);
 int hash(char c);
+
 
 /* global */
 extern char **tree_pointer;
 extern Type than_flag;
 extern int if_flag;
 extern int null_flag;
-extern cons_t *hashtable[HASH_BACKET];
+extern h_table *hashtable[HASH_BACKET];
 extern int setq_flag;
 
 #define IF_ON    1

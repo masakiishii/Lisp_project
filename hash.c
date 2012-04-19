@@ -1,7 +1,7 @@
 #include "ilisp.h"
 
 int null_flag=0;
-cons_t *hashtable[HASH_BACKET];
+h_table *hashtable[HASH_BACKET];
 
 int hash(char c)
 {
@@ -12,7 +12,7 @@ void hash_val(cons_t *h_val)
 {
 
 	int bucket;
-	cons_t *oldheader;
+	h_table *oldheader;
 
 	if(null_flag == 0){
 	makenull(hashtable);
@@ -22,10 +22,10 @@ void hash_val(cons_t *h_val)
 	bucket = hash(h_val->svalue[0]);
 
 	oldheader = hashtable[bucket];
-	hashtable[bucket] = (cons_t *)malloc(sizeof(cons_t));
+	hashtable[bucket] = (h_table *)malloc(sizeof(cons_t));
 
-	hashtable[bucket]->val = h_val->cdr->ivalue;
-	hashtable[bucket]->svalue = h_val->svalue;
+	hashtable[bucket]->symbol = h_val->svalue;
+	hashtable[bucket]->i_val = h_val->cdr->ivalue;
 	hashtable[bucket]->next = oldheader;
 }
 
@@ -36,20 +36,20 @@ void makenull(cons_t *h_val[])
 		h_val[i] = NULL;
 }
 
-cons_t *search_hash(cons_t *search_head)
+int search_hash(cons_t *search_head)
 {
-	cons_t *p;
+	h_table *p;
 	int flag = 1;
 	char *str = search_head->svalue;
 
 	p = hashtable[hash(str[0])];
 
 	while(p != NULL && flag){
-		if(strcmp(p->svalue, str))
+		if(strcmp(p->symbol, str))
 			p = p->next;
 		else
 			flag=0;
 	}
 //	p->ivalue = p->val;
-	return p;
+	return p->i_val;
 }

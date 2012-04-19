@@ -22,6 +22,7 @@ int main(void)
 			printf("Nil\n");
 		}else if( setq_flag == 0 ){
 				printf("%d\n", answer_tree.ivalue);
+				//printf("%d\n", answer_tree.val);
 		}
 		setq_flag = 0;
 		than_flag = ZERO_FLAG;
