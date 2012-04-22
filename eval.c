@@ -107,9 +107,14 @@ cons_t eval_tree(cons_t *ev_head)
 	case T_FUNC  :
 			str_val_cons = search_func_hash(ev_head);
 			while(ev_head->cdr != NULL){ 
-				stack_push(ev_head->cdr->ivalue, n++); 
-				ev_head = ev_head->cdr; 
-			} 
+				if(ev_head->cdr->type == T_STRING){
+					stack_push(search_hash(ev_head->cdr), n++);
+					ev_head = ev_head->cdr;
+				}else{
+					stack_push(ev_head->cdr->ivalue, n++); 
+					ev_head = ev_head->cdr; 
+				} 
+			}
 			return eval_tree(str_val_cons.cdr);
 
 	case  T_STRING  :
@@ -142,17 +147,17 @@ void defun_eval(cons_t *arg, cons_t *rept)
 
 		if(rept_ptr->cdr != NULL)
 			defun_eval(arg,rept_ptr->cdr);
-
 		break;
 
+	case T_BEGIN :
+			defun_eval(arg,rept_ptr->car);
+			if(rept_ptr->cdr != NULL)
+				defun_eval(arg,rept_ptr->cdr);
+			break;
 
 	default :
-		if(rept_ptr->car != NULL)
-			defun_eval(arg,rept_ptr->car);
-
 		if(rept_ptr->cdr != NULL)
 			defun_eval(arg,rept_ptr->cdr);
-					   
 		break;
 	}
 }

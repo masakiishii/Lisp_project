@@ -79,7 +79,6 @@ cons_t *parse(char **t)
 			head->ivalue = strtol(*t, NULL, 10);
 			tree_pointer++;
 			head->cdr = parse(tree_pointer);
-
 		}else if(isalpha(**t)){
 			if( strncmp(*t, "if", 3) == 0 ) {
 				head->type = T_IF;
