@@ -101,23 +101,21 @@ cons_t eval_tree(cons_t *ev_head)
 
 
 	case T_ARGUMENT :
-		if( (ev_head->ivalue < 0) || (ev_head->ivalue > 9)){
+			str_val_cons.ivalue = stack_pop(ev_head->ivalue);
+			return str_val_cons;
+
+	case T_FUNC  :
 			str_val_cons = search_func_hash(ev_head);
-			while(ev_head != NULL){ 
-				stack_push(ev_head->cdr, n++); 
+			while(ev_head->cdr != NULL){ 
+				stack_push(ev_head->cdr->ivalue, n++); 
 				ev_head = ev_head->cdr; 
 			} 
 			return eval_tree(str_val_cons.cdr);
-		}else{
-			str_val_cons.ivalue = stack_pop(ev_head->ivalue);
-			return str_val_cons;
-		}
 
 	case  T_STRING  :
-		str_val_cons.ivalue = search_hash(ev_head);
-		str_val_cons.type = T_NUMBER;
-		return str_val_cons;
-		
+			str_val_cons.ivalue = search_hash(ev_head);
+			str_val_cons.type = T_NUMBER;
+			return str_val_cons;
 
 	default         :
 		return *ev_head;

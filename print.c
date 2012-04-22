@@ -96,6 +96,13 @@ void print_tree(cons_t *tree, int n)
 			printf("defun\n");
 			break;
 
+		case T_FUNC   :
+			print_tree(tree->cdr, n+1);
+			for(i=0;i<n;i++)
+				printf("\t");
+			printf("%s\n", tree->svalue);
+			break;
+
 		case T_STRING   :
 			print_tree(tree->cdr, n+1);
 			for(i=0;i<n;i++)

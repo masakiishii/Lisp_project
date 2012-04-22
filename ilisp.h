@@ -22,6 +22,7 @@ typedef enum Type {
 /*T_COMMA,*/
   T_NUMBER,
   T_STRING,
+  T_FUNC,
   T_IF,
   T_SETQ,
   T_DEFUN,
@@ -91,7 +92,7 @@ extern cons_t *defun_pointer;
 extern int stacktable[ARG_STACK][ARG_LENGTH];
 extern int stack_index[ARG_STACK];
 extern int search_setq_val_flag;
-extern int call_func;
+extern int defun_call;
 
 #define IF_ON    1
 #define IF_OFF   0

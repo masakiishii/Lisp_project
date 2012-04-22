@@ -60,11 +60,7 @@ int search_hash(cons_t *search_head)
 			flag = 0;
 		}
 	}
-	if( p == NULL){
-		search_setq_val_flag = 0;
-		return 0;
-	}
-
+	
 	return p->i_val;
 }
 
