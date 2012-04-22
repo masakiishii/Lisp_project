@@ -4,7 +4,7 @@ cons_t *iread(void)
 {
 	char **t;
 	cons_t *head;
-//	int n=0;
+	cons_t *h_ptr;
 
  	t = tokenize();
 

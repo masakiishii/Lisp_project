@@ -102,6 +102,16 @@ void print_tree(cons_t *tree, int n)
 				printf("\t");
 			printf("%s\n", tree->svalue);
 			break;
+
+
+		case T_ARGUMENT :
+			print_tree(tree->cdr, n+1);
+			for(i=0;i<n;i++)
+				printf("\t");
+			printf("%d\n", tree->ivalue);
+			break;
+
+
 		}
 	}
 }

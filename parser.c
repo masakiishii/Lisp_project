@@ -2,6 +2,8 @@
 
 char **tree_pointer = NULL;
 int setq_flag = 0;
+int defun_flag = DEFUN_OFF;
+int call_func = OFF;
 
 cons_t *parse(char **t)
 {
@@ -73,7 +75,11 @@ cons_t *parse(char **t)
 
 	default :
 		if(isdigit(**t)){
-			head->type = T_NUMBER;
+			if( call_func == ON){
+				head->type = T_ARGUMENT;
+			}else{
+				head->type = T_NUMBER;
+			}
 			head->ivalue = strtol(*t, NULL, 10);
 			tree_pointer++;
 			head->cdr = parse(tree_pointer);
@@ -84,8 +90,6 @@ cons_t *parse(char **t)
 				head->svalue = *t;
 				tree_pointer++;
 				head->cdr = parse(tree_pointer);
-//				tree_pointer++;
-//				head->cdr->cdr = parse(tree_pointer);
 			}else if( strncmp(*t, "setq", 5) == 0){
 				setq_flag = 1;
 				head->type = T_SETQ;
@@ -93,17 +97,28 @@ cons_t *parse(char **t)
 				head->cdr = parse(tree_pointer);
 			}else if( strncmp(*t, "defun", 6) == 0){
 				head->type = T_DEFUN;
+				defun_flag = DEFUN_ON;
+				call_func = ON;
 				tree_pointer++;
 				head->cdr = parse(tree_pointer);
+				
 			}else{
-				head->type = T_STRING;
-				head->svalue = *t;
-				tree_pointer++;
-				head->cdr = parse(tree_pointer);
-			}
-		} 
-		break;
-	}
+				if( defun_flag == DEFUN_ON){
+					head->type = T_ARGUMENT;
+					head->svalue = *t;
+					tree_pointer++;
+					head->cdr = parse(tree_pointer);
 
+				}else{
+					head->type = T_STRING;				
+					head->svalue = *t;
+					tree_pointer++;
+					head->cdr = parse(tree_pointer);
+				}
+			}
+		}
+		break;
+
+	}
 	return head;
 }

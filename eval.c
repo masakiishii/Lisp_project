@@ -7,6 +7,7 @@ cons_t eval_tree(cons_t *ev_head)
 {
 	cons_t *eval_pointer;
 	cons_t str_val_cons;
+	int n=0;
 
 	switch(ev_head->type){
 
@@ -99,17 +100,71 @@ cons_t eval_tree(cons_t *ev_head)
 		return *ev_head;
 
 
-//	case  T_DEFUN   :
-//		return *eval_string(ev_head);
-
+	case T_ARGUMENT :
+		if( (ev_head->ivalue < 0) || (ev_head->ivalue > 9)){
+			str_val_cons = search_func_hash(ev_head);
+			while(ev_head != NULL){ 
+				stack_push(ev_head->cdr, n++); 
+				ev_head = ev_head->cdr; 
+			} 
+			return eval_tree(str_val_cons.cdr);
+		}else{
+			str_val_cons.ivalue = stack_pop(ev_head->ivalue);
+			return str_val_cons;
+		}
 
 	case  T_STRING  :
 		str_val_cons.ivalue = search_hash(ev_head);
 		str_val_cons.type = T_NUMBER;
 		return str_val_cons;
+		
 
 	default         :
 		return *ev_head;
 	}
 }
 
+void defun_eval(cons_t *arg, cons_t *rept)
+{
+	cons_t *arg_ptr = arg;
+	cons_t *rept_ptr = rept;
+	int arg_number = 0;
+
+	switch(rept_ptr->type){
+
+	case T_ARGUMENT :
+		while( arg_ptr != NULL ){
+			if( strcmp(arg_ptr->svalue, rept_ptr->svalue) == 0 ){
+				rept_ptr->ivalue = arg_number;
+				break;
+			}
+			arg_ptr = arg_ptr->cdr;		
+			arg_number++;
+		}
+
+		if(rept_ptr->cdr != NULL)
+			defun_eval(arg,rept_ptr->cdr);
+
+		break;
+
+
+	default :
+		if(rept_ptr->car != NULL)
+			defun_eval(arg,rept_ptr->car);
+
+		if(rept_ptr->cdr != NULL)
+			defun_eval(arg,rept_ptr->cdr);
+					   
+		break;
+	}
+}
+
+void arg_numbering(cons_t *d_p)
+{
+	int arg_number = 0;
+
+	while( d_p != NULL ){
+		d_p->ivalue = arg_number++;
+		d_p = d_p->cdr;
+	}
+}
