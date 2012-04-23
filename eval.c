@@ -8,84 +8,92 @@ cons_t eval_tree(cons_t *ev_head)
 	cons_t *eval_pointer;
 	cons_t str_val_cons;
 	int n=0;
+	cons_t *arg_eval_ptr;
+	cons_t eval_func_answer;
 
 	switch(ev_head->type){
 
 	case T_BEGIN    :
-		ev_head->ivalue = eval_tree(ev_head->car).ivalue;
-		return *ev_head;
+		str_val_cons.ivalue = eval_tree(ev_head->car).ivalue;
+		return str_val_cons;
 
 	case OP_ADD     :
 		eval_pointer = ev_head->cdr;
-		ev_head->ivalue = eval_tree(eval_pointer).ivalue;
+		str_val_cons.ivalue = eval_tree(eval_pointer).ivalue;
 		while(eval_pointer->cdr != NULL) {
 			eval_pointer = eval_pointer->cdr;
-			ev_head->ivalue += eval_tree(eval_pointer).ivalue;
+			str_val_cons.ivalue += eval_tree(eval_pointer).ivalue;
 		}
-		return *ev_head;
+		return str_val_cons;
 
 	case OP_SUB     :
 		eval_pointer = ev_head->cdr;
-		ev_head->ivalue = eval_tree(eval_pointer).ivalue;
+		str_val_cons.ivalue = eval_tree(eval_pointer).ivalue;
 		while(eval_pointer->cdr != NULL) {
 			eval_pointer = eval_pointer->cdr;
-			ev_head->ivalue -= eval_tree(eval_pointer).ivalue;
+			str_val_cons.ivalue -= eval_tree(eval_pointer).ivalue;
 		}
-		return *ev_head;
+		return str_val_cons;
 
 	case OP_MULT    :
 		eval_pointer = ev_head->cdr;
-		ev_head->ivalue = eval_tree(eval_pointer).ivalue;
+		str_val_cons.ivalue = eval_tree(eval_pointer).ivalue;
 		while(eval_pointer->cdr != NULL) {
 			eval_pointer = eval_pointer->cdr;
-			ev_head->ivalue *= eval_tree(eval_pointer).ivalue;
+			str_val_cons.ivalue *= eval_tree(eval_pointer).ivalue;
 		}
-		return *ev_head;
+		return str_val_cons;
 
 	case OP_DEV     :
 		eval_pointer = ev_head->cdr;
-		ev_head->ivalue = eval_tree(eval_pointer).ivalue;
+		str_val_cons.ivalue = eval_tree(eval_pointer).ivalue;
 		while(eval_pointer->cdr != NULL) {
 			eval_pointer = eval_pointer->cdr;
-			ev_head->ivalue /= eval_tree(eval_pointer).ivalue;
+			str_val_cons.ivalue /= eval_tree(eval_pointer).ivalue;
 		}
-		return *ev_head;
+		return str_val_cons;
+
 	case L_THAN    :
 		if( eval_tree(ev_head->cdr).ivalue < eval_tree(ev_head->cdr->cdr).ivalue ){
-			ev_head->ivalue = 1;
 			than_flag = TRUE_FLAG;
 			if( if_flag == IF_ON ){
-				return *ev_head;
+				str_val_cons.ivalue = 1;
+				return str_val_cons;
 			}
-			return *ev_head->cdr;
+			str_val_cons.ivalue = eval_tree(ev_head->cdr).ivalue;
+			return str_val_cons;
 		}else{
-			ev_head->ivalue = 0;
 			than_flag = FALSE_FLAG;
 			if( if_flag == IF_ON ){
-				return *ev_head;
+				str_val_cons.ivalue = 0;
+				return str_val_cons;
 			}
-			return *ev_head->cdr->cdr;
+			str_val_cons.ivalue = eval_tree(ev_head->cdr->cdr).ivalue;
+			return str_val_cons;
 		}
 
 	case M_THAN    :
 		if( eval_tree(ev_head->cdr).ivalue > eval_tree(ev_head->cdr->cdr).ivalue ){
-			ev_head->ivalue = 1;
 			than_flag = TRUE_FLAG;
 			if( if_flag == IF_ON ){
-				return *ev_head;
+				str_val_cons.ivalue = 1;
+				return str_val_cons;
 			}
-			return *ev_head->cdr;
+			str_val_cons.ivalue = eval_tree(ev_head->cdr).ivalue;
+			return str_val_cons;
 		}else{
-			ev_head->ivalue = 0;
 			than_flag = FALSE_FLAG;
 			if( if_flag == IF_ON ){
-				return *ev_head;
+				str_val_cons.ivalue = 0;
+				return str_val_cons;
 			}
-			return *ev_head->cdr->cdr;
+			str_val_cons.ivalue = eval_tree(ev_head->cdr->cdr).ivalue;
+			return str_val_cons;
 		}
 
 	case  T_NUMBER  :
-		return *ev_head;
+		str_val_cons.ivalue = ev_head->ivalue;
+		return str_val_cons;
 
 	case  T_IF      : 
 		if_flag = IF_ON;
@@ -101,21 +109,39 @@ cons_t eval_tree(cons_t *ev_head)
 
 
 	case T_ARGUMENT :
-			str_val_cons.ivalue = stack_pop(ev_head->ivalue);
-			return str_val_cons;
+		str_val_cons.ivalue = stack_get_topindex(ev_head->ivalue);
+//		str_val_cons.ivalue = stack_pop(ev_head->ivalue);	
+		return str_val_cons;
 
 	case T_FUNC  :
 			str_val_cons = search_func_hash(ev_head);
+			arg_eval_ptr = ev_head;
+
 			while(ev_head->cdr != NULL){ 
 				if(ev_head->cdr->type == T_STRING){
 					stack_push(search_hash(ev_head->cdr), n++);
 					ev_head = ev_head->cdr;
 				}else{
-					stack_push(ev_head->cdr->ivalue, n++); 
+					stack_push(eval_tree(ev_head->cdr).ivalue, n++); 
 					ev_head = ev_head->cdr; 
 				} 
 			}
-			return eval_tree(str_val_cons.cdr);
+
+			eval_func_answer = eval_tree(str_val_cons.cdr);
+			n=0;
+
+			while(arg_eval_ptr->cdr != NULL){ 
+				stack_pop(n++);
+				arg_eval_ptr = arg_eval_ptr->cdr;
+			}
+			return eval_func_answer;
+
+//			str_val_cons = eval_tree(str_val_cons.cdr);
+//			while(eval_pointer != NULL){
+//				stack_pop(eval_pointer->ivalue);
+//				eval_pointer = eval_pointer->cdr;
+//			}
+//			return str_val_cons;
 
 	case  T_STRING  :
 			str_val_cons.ivalue = search_hash(ev_head);

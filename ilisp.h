@@ -75,7 +75,9 @@ void arg_numbering(cons_t *);
 void hash_func(cons_t *);
 cons_t search_func_hash(cons_t *);
 void stack_push(int, int);
-int stack_pop(int);
+//int stack_pop(int);
+void stack_pop(int);
+int stack_get_topindex(int);
 
 /* global */
 extern char **tree_pointer;
@@ -92,7 +94,6 @@ extern cons_t *defun_pointer;
 extern int stacktable[ARG_STACK][ARG_LENGTH];
 extern int stack_index[ARG_STACK];
 extern int search_setq_val_flag;
-extern int defun_call;
 
 #define IF_ON    1
 #define IF_OFF   0

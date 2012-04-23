@@ -10,7 +10,8 @@ h_table *hashtable[HASH_BACKET];
 f_table *functable[HASH_BACKET];
 
 int stacktable[ARG_STACK][ARG_LENGTH] = {0};
-int stack_index[ARG_STACK] = {0};
+//int stack_index[ARG_STACK] = {0};
+int stack_index[ARG_STACK] = {-1};
 
 int hash(char c)
 {
@@ -106,12 +107,23 @@ cons_t search_func_hash(cons_t *search_func_head)
 
 void stack_push(int st_arg, int st_number)
 {
-	stacktable[st_number][stack_index[st_number]] = st_arg;
 	stack_index[st_number]++;
+	stacktable[st_number][stack_index[st_number]] = st_arg;
+//	stack_index[st_number]++;
 }
 
-int stack_pop(int st_pop)
+/* int stack_pop(int st_pop) */
+/* { */
+/* //	stack_index[st_pop]--; */
+/* 	return stacktable[st_pop][stack_index[st_pop]--]; */
+/* }    */
+
+ void stack_pop(int st_pop) 
+ { 
+ 	stack_index[st_pop]--;
+ }
+
+int stack_get_topindex(int topindex)
 {
-	stack_index[st_pop]--;
-	return stacktable[st_pop][stack_index[st_pop]];
-}   
+	return stacktable[topindex][stack_index[topindex]];
+}

@@ -6,7 +6,7 @@ void print_tree(cons_t *tree, int n)
 
 	if(tree == NULL){
 		for(i=0;i<n;i++)
-			printf("\t");
+			printf("  ");
 		printf("')'\n");
 	}else{
 
@@ -20,7 +20,7 @@ void print_tree(cons_t *tree, int n)
 				print_tree(tree->cdr, n+1);
 			}
 			for(i=0;i<n;i++)
-				printf("\t");
+				printf("  ");
 			printf("'('\n");
 			print_tree(tree->car, n+1);
 			break;
@@ -29,93 +29,93 @@ void print_tree(cons_t *tree, int n)
 			print_tree(tree->cdr, n+1);
 
 			for(i=0;i<n;i++)
-				printf("\t");
+				printf("  ");
 			printf("'+'\n");
 			break;
 
 		case OP_SUB     :
 			print_tree(tree->cdr, n+1);
 			for(i=0;i<n;i++)
-				printf("\t");
+				printf("  ");
 			printf("'-'\n");
 			break;
 
 		case OP_MULT    :
 			print_tree(tree->cdr, n+1);
 			for(i=0;i<n;i++)
-				printf("\t");
+				printf("  ");
 			printf("'*'\n");
 			break;
 
 		case OP_DEV     :
 			print_tree(tree->cdr, n+1);
 			for(i=0;i<n;i++)
-				printf("\t");
+				printf("  ");
 			printf("'/'\n");
 			break;
 
 		case L_THAN     :
 			print_tree(tree->cdr, n+1);
 			for(i=0;i<n;i++)
-				printf("\t");
+				printf("  ");
 			printf("'<'\n");
 			break;
 
 		case M_THAN    :
 			print_tree(tree->cdr, n+1);
 			for(i=0;i<n;i++)
-				printf("\t");
+				printf("  ");
 			printf("'>'\n");
 			break;
 
 		case T_NUMBER   :
 			print_tree(tree->cdr, n+1);
 			for(i=0;i<n;i++)
-				printf("\t");
+				printf("  ");
 			printf("%d\n", tree->ivalue);
 			break;
 
 		case T_IF       :
 			print_tree(tree->cdr, n+1);
 			for(i=0;i<n;i++)
-				printf("\t");
+				printf("  ");
 			printf("if\n");
 			break;
 
 		case T_SETQ     :
 			print_tree(tree->cdr, n+1);
 			for(i=0;i<n;i++)
-				printf("\t");
+				printf("  ");
 			printf("setq\n");
 			break;
 
 		case T_DEFUN    :
 			print_tree(tree->cdr, n+1);
 			for(i=0;i<n;i++)
-				printf("\t");
+				printf("  ");
 			printf("defun\n");
 			break;
 
 		case T_FUNC   :
 			print_tree(tree->cdr, n+1);
 			for(i=0;i<n;i++)
-				printf("\t");
-			printf("%s\n", tree->svalue);
+				printf("  ");
+			printf("F:%s\n", tree->svalue);
 			break;
 
 		case T_STRING   :
 			print_tree(tree->cdr, n+1);
 			for(i=0;i<n;i++)
-				printf("\t");
-			printf("%s\n", tree->svalue);
+				printf("  ");
+			printf("S:%s\n", tree->svalue);
 			break;
 
 
 		case T_ARGUMENT :
 			print_tree(tree->cdr, n+1);
 			for(i=0;i<n;i++)
-				printf("\t");
-			printf("%d\n", tree->ivalue);
+				printf("  ");
+			printf("A:%d\n", tree->ivalue);
 			break;
 
 
