@@ -18,8 +18,6 @@ typedef enum Type {
   OP_DEV,
   L_THAN,
   M_THAN,
-  /*T_SPACE,*/
-/*T_COMMA,*/
   T_NUMBER,
   T_STRING,
   T_FUNC,
@@ -75,7 +73,6 @@ void arg_numbering(cons_t *);
 void hash_func(cons_t *);
 cons_t search_func_hash(cons_t *);
 void stack_push(int, int);
-//int stack_pop(int);
 void stack_pop(int);
 int stack_get_topindex(int);
 

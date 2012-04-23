@@ -109,14 +109,7 @@ void stack_push(int st_arg, int st_number)
 {
 	stack_index[st_number]++;
 	stacktable[st_number][stack_index[st_number]] = st_arg;
-//	stack_index[st_number]++;
 }
-
-/* int stack_pop(int st_pop) */
-/* { */
-/* //	stack_index[st_pop]--; */
-/* 	return stacktable[st_pop][stack_index[st_pop]--]; */
-/* }    */
 
  void stack_pop(int st_pop) 
  { 
