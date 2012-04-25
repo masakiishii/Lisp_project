@@ -1,21 +1,19 @@
 #include "ilisp.h"
 
-int h_null_flag=0;
-int f_null_flag=0;
-int s_null_flag=0;
+int h_null_flag = 0;
+int f_null_flag = 0;
+int s_null_flag = 0;
 int search_setq_val_flag = 1;
 
 h_table *hashtable[HASH_BACKET];
-
 f_table *functable[HASH_BACKET];
 
 int stacktable[ARG_STACK][ARG_LENGTH] = {0};
-//int stack_index[ARG_STACK] = {0};
 int stack_index[ARG_STACK] = {-1};
 
 int hash(char c)
 {
-	return c % HASH_BACKET;
+	return (c % HASH_BACKET);
 }
 
 void hash_val(cons_t *h_val)
@@ -24,8 +22,8 @@ void hash_val(cons_t *h_val)
 	int bucket;
 	h_table *oldheader;
 
-	if(h_null_flag == 0){
-	makenull(hashtable);
+	if(h_null_flag == 0) {
+		make_hashtable_null(hashtable);
 		h_null_flag = 1;
 	};
 
@@ -39,14 +37,14 @@ void hash_val(cons_t *h_val)
 	hashtable[bucket]->next = oldheader;
 }
 
-void makenull(cons_t *h_val[])
+void make_hashtable_null(cons_t *h_val[])
 {
 	int i;
-	for(i=0;i<HASH_BACKET;i++)
+	for(i = 0;i < HASH_BACKET; i++)
 		h_val[i] = NULL;
 }
 
-int search_hash(cons_t *search_head)
+int search_val_hash(cons_t *search_head)
 {
 	h_table *p;
 	int flag = 1;
@@ -55,9 +53,9 @@ int search_hash(cons_t *search_head)
 	p = hashtable[hash(str[0])];
 
 	while (p != NULL && flag) {
-		if (strcmp(p->symbol, str)){
+		if(strcmp(p->symbol, str)) {
 			p = p->next;
-		} else {
+		}else{
 			flag = 0;
 		}
 	}
@@ -72,8 +70,8 @@ void hash_func(cons_t *h_func)
 	int bucket;
 	f_table *oldheader;
 
-	if(f_null_flag == 0){
-	makenull(functable);
+	if(f_null_flag == 0) {
+	make_hashtable_null(functable);
 		f_null_flag = 1;
 	};
 
@@ -94,8 +92,8 @@ cons_t search_func_hash(cons_t *search_func_head)
 
 	p = functable[hash(str[0])];
 
-	while(p != NULL && flag){
-		if(strcmp(p->fn_t.svalue, str)){
+	while(p != NULL && flag) {
+		if(strcmp(p->fn_t.svalue, str)) {
 			p = p->next;
 		}else{
 			flag=0;

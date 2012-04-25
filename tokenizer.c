@@ -1,79 +1,81 @@
 #include "ilisp.h"
 
-char **tokenize(void)
+char **tokenize(char *line)
 {
-	char *p = (char *)readline(">>>");
-	add_history(p);
+	char *p;
+
+	if(line == NULL) {
+		p = (char *)readline(">>>");
+		add_history(p);
+	}else{
+		p = line;
+	}
+
 	char str_bye[] = "(bye)";
 	char str_exit[] = "(exit)";
 
-	if( (strcmp(str_bye, p) == 0) || (strcmp(str_exit, p) == 0) ){
+	if((strcmp(str_bye, p) == 0) || (strcmp(str_exit, p) == 0)) {
 		return NULL;
-	}else{
-  
-	char *p1 = p;
-	char *p2 = p;
-	char **token = (char **)malloc(sizeof(char *)*1024);    
-	int i=0;
+	} else {
 
-	while(*p1 != '\0'){
+		char *current_ptr = p;
+		char *previous_ptr = p;
+		char **token = (char **)malloc(sizeof(char *) * HEAP_SIZE);
+		int i = 0;
 
-		switch(*p1){
+		while(*current_ptr != '\0') {
 
-		case ')':
-			if( (*(p1-1) != ' ') && (*(p1-1) != ')') ){
-				token[i] = strndup(p2,p1-p2);
-				token[i][p1-p2] = '\0';
-				i+=1;
-				token[i] = strndup(p1,1);
+			switch(*current_ptr) {
+
+			case ')':
+				if((*(current_ptr - 1) != ' ') && (*(current_ptr - 1) != ')')) {
+					token[i] = strndup(previous_ptr, current_ptr - previous_ptr);
+					token[i][current_ptr - previous_ptr] = '\0';
+					i++;
+				}
+				token[i] = strndup(current_ptr, 1);
 				token[i][1] = '\0';
-				i+=1;
-				p1+=1;
-				p2=p1;
-			}else{
-				token[i] = strndup(p1,1);
-				token[i][1] = '\0';
-				i+=1;
-				p1++;
-				p2=p1;
-			}
-			break;
+				i++;
+				current_ptr++;
+				previous_ptr = current_ptr;
+				break;
 
 		case ' ':
 		case '\n':
-			if(p1 == p2){
-				p1++;
-				p2 = p1;
+			if(current_ptr == previous_ptr) {
+				current_ptr++;
+				previous_ptr = current_ptr;
 				break;
 			}else{
-				token[i] = strndup(p2,p1-p2);
-				token[i][p1-p2] = '\0';
-				i+=1;
-				p1+=1;
-				p2=p1;
+				token[i] = strndup(previous_ptr, current_ptr - previous_ptr);
+				token[i][current_ptr - previous_ptr] = '\0';
+				i++;
+				current_ptr++;
+				previous_ptr = current_ptr;
 				break;
 			}
 
 		case '(': 
-			token[i] = strndup(p1, 1);
+			token[i] = strndup(current_ptr, 1);
 			token[i][1] = '\0';
 			i++;
-			p1++;
-			p2++;
+			current_ptr++;
+			previous_ptr++;
 			break;
-
-		default : p1++;
+			
+		default : current_ptr++;
 		}
 	}
 	token[i] = NULL;
 
-	print_test(token);
+//	print_test(token);
 
 	return token;
 	}
 }
 
-void print_test(char **pt){
+void print_test(char **pt)
+{
 	int i = 0;
 	while(pt[i] != NULL) {
 		printf("%s\n", pt[i]);

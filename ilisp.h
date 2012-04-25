@@ -5,6 +5,7 @@
 #include <string.h>
 #include <ctype.h>
 
+#define HEAP_SIZE 1024
 #define HASH_BACKET 64
 #define ARG_STACK    8
 #define ARG_LENGTH  64
@@ -16,8 +17,8 @@ typedef enum Type {
   OP_SUB,
   OP_MULT,
   OP_DEV,
-  L_THAN,
-  M_THAN,
+  LESS_THAN,
+  GREATER_THAN,
   T_NUMBER,
   T_STRING,
   T_FUNC,
@@ -57,16 +58,17 @@ typedef struct stack {
 	struct stack *next;
 } stack;
 
-
-char **tokenize(void);
+void readline_main(void);
+void file_main(char **);
+char **tokenize(char *);
 cons_t *parse(char **);
-cons_t *iread(void);
+cons_t *iread(char *);
 void print_tree(cons_t *,int);
 void print_test(char **);
 cons_t eval_tree(cons_t *);
 void hash_val(cons_t *);
-void makenull(cons_t *h_val[]);
-int search_hash(cons_t *);
+void make_hashtable_null(cons_t *h_val[]);
+int search_val_hash(cons_t *);
 int hash(char );
 void defun_eval(cons_t *, cons_t *);
 void arg_numbering(cons_t *);
@@ -75,6 +77,8 @@ cons_t search_func_hash(cons_t *);
 void stack_push(int, int);
 void stack_pop(int);
 int stack_get_topindex(int);
+
+
 
 /* global */
 extern char **tree_pointer;

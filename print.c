@@ -54,14 +54,14 @@ void print_tree(cons_t *tree, int n)
 			printf("'/'\n");
 			break;
 
-		case L_THAN     :
+		case LESS_THAN     :
 			print_tree(tree->cdr, n+1);
 			for(i=0;i<n;i++)
 				printf("  ");
 			printf("'<'\n");
 			break;
 
-		case M_THAN    :
+		case GREATER_THAN    :
 			print_tree(tree->cdr, n+1);
 			for(i=0;i<n;i++)
 				printf("  ");

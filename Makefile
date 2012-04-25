@@ -1,7 +1,7 @@
 CC=gcc
 TARGET=ilisp
 LDLIBS=-lreadline
-CFLAGS=-g3 -O0 -W -Wall
+CFLAGS=-g3 -Os -W -Wall
 OBJS=\
 	main.o \
     tokenizer.o \
