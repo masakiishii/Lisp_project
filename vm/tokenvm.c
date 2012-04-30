@@ -92,7 +92,11 @@ token_t parse_operater(char *buf)
 {
 	token_t parse_op;
 	parse_op.type = T_OPERATOR;
-	parse_op.str = strndup(buf, 1);
+	if(*(buf+1) == '='){
+		parse_op.str = strndup(buf, 2);
+	}else{
+		parse_op.str = strndup(buf, 1);
+	}
 	return parse_op;
 }
 
