@@ -1,4 +1,4 @@
-#include "ilisp.h"
+#include "ilispvm.h"
 
 int main(int argc, char **argv)
 {
@@ -43,6 +43,8 @@ void file_main(char **argv)
 			func = (func_t *)malloc(sizeof(func_t));
 			func->index = 0;
 			generatecoder(tree_head, func, 0);
+			func->code[func->index].op = RET;
+			func->code[func->index].reg0 = 0;
 			fprintf(stderr, "%d\n", vm_run(func->code));
 			
 		}

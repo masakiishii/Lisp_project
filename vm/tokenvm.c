@@ -1,4 +1,4 @@
-#include "ilisp.h"
+#include "ilispvm.h"
 
 
 char *skip_space(char *buf)
@@ -25,15 +25,18 @@ token_t *tokenize(char *buf)
 	while (*buf != '\n') {
 		buf = skip_space(buf);
 		char c = *buf;
+
 		switch (c) {
 		case '(' :
 			*tokens = parse_begin(buf);
 			tokens++;
 			break;
+
 		case ')' :
 			*tokens = parse_end(buf);
 			tokens++;
 			break;
+
 		case '+' :
 		case '-' :
 			if(isalnum(*(buf+1)))
@@ -47,6 +50,7 @@ token_t *tokenize(char *buf)
 			*tokens = parse_operater(buf);
 			tokens++;
 			break;
+
 		case '0' :
 		case '1' :
 		case '2' :
@@ -59,10 +63,19 @@ token_t *tokenize(char *buf)
 		case '9' :
 number:     *tokens = parse_number(buf);
 			tokens++;
+			while(isalnum(*buf)){
+				buf++;
+			}
+			buf-=1;
 			break;
+
 		default:
 			*tokens = parse_symbol(buf);
 			tokens++;
+			while(*buf != ' '){
+				buf;
+			}
+			buf-=1;
 			break;
 		}
 		buf++;
@@ -111,7 +124,6 @@ token_t parse_number(char *buf)
 	}
 	parse_num.str = strndup(buf, buf_current - buf);
 	parse_num.type = T_NUMBER;
-	buf = buf_current;
 	return parse_num;
 }
 
@@ -125,7 +137,6 @@ token_t parse_symbol(char *buf)
 	}
 	parse_num.str = strndup(buf, buf_current - buf);
 	parse_num.type = T_STRING;
-	buf = buf_current;
 	return parse_num;
 
 }

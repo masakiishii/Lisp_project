@@ -21,6 +21,10 @@ enum opcode {
 	SUB,
 	MULT,
 	DEV,
+	LESSTHAN,
+	L_EQUAL,
+	GREATERTHAN,
+	G_EQUAL,
 	RET
 };
 

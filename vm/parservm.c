@@ -1,13 +1,14 @@
-#include "ilisp.h"
+#include "ilispvm.h"
 
 token_t *treePointer = NULL;
 
 cons_t *parse(token_t *t)
 {
 
-	/* if(t->type == T_END) { */
-	/* 	return NULL; */
-	/* } */
+	if(t->type == T_END) {
+		treePointer++;
+		return NULL;
+	}
 
 	cons_t *treehead = (cons_t *)malloc(sizeof(cons_t));
 
@@ -19,11 +20,6 @@ cons_t *parse(token_t *t)
 		treePointer++;
 		treehead->car = parse(treePointer);
 		treehead->cdr = parse(treePointer);
-		break;
-
-	case T_END :
-		treehead->type = T_END;
-		treehead->svalue = t->str;
 		break;
 
 	case T_OPERATOR :
