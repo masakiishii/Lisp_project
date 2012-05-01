@@ -6,22 +6,28 @@ int vm_run(bytecode_t *op)
 	int regs[128];
 	while(1) {
 		pc = op;
+
 		switch (pc->op) {
 		case SET:
 			regs[pc->reg0] = pc->data1;
 			break;
+
 		case ADD:
 			regs[pc->reg0] = regs[pc->reg1] + regs[pc->reg2];
 			break;
+
 		case SUB:
 			regs[pc->reg0] = regs[pc->reg1] - regs[pc->reg2];
 			break;
+
 		case MULT:
 			regs[pc->reg0] = regs[pc->reg1] * regs[pc->reg2];
 			break;
+
 		case DEV:
 			regs[pc->reg0] = regs[pc->reg1] / regs[pc->reg2];
 			break;
+
 		case LESSTHAN:
 			if(regs[pc->reg1] < regs[pc->reg2]) {
 				regs[pc->reg0] = 1;
@@ -29,6 +35,7 @@ int vm_run(bytecode_t *op)
 				regs[pc->reg0] = 0;
 			}
 			break;
+
 		case L_EQUAL:
 			if(regs[pc->reg1] <= regs[pc->reg2]) {
 				regs[pc->reg0] = 1;
@@ -36,6 +43,7 @@ int vm_run(bytecode_t *op)
 				regs[pc->reg0] = 0;
 			}
 			break;
+
 		case GREATERTHAN:
 			if(regs[pc->reg1] > regs[pc->reg2]) {
 				regs[pc->reg0] = 1;
@@ -43,6 +51,7 @@ int vm_run(bytecode_t *op)
 				regs[pc->reg0] = 0;
 			}
 			break;
+
 		case G_EQUAL:
 			if(regs[pc->reg1] >= regs[pc->reg2]) {
 				regs[pc->reg0] = 1;
@@ -50,6 +59,7 @@ int vm_run(bytecode_t *op)
 				regs[pc->reg0] = 0;
 			}
 			break;
+
 		case RET:
 			return regs[pc->reg0];
 			/* case IF: */

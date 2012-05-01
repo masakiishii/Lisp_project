@@ -7,10 +7,10 @@ void generatecoder(cons_t *treehead, func_t *func, int r)
 	switch(treehead->type){
 	case T_BEGIN:
 		generatecoder(treehead->car, func, r);
+//		generatecoder(treehead->cdr, func, r+1);
 		break;
 
 	case  T_NUMBER:
-		// set reg[r] = i
 		func->code[func->index].op = SET;
 		func->code[func->index].reg0 = r;
 		func->code[func->index].data1 = treehead->ivalue;
@@ -104,6 +104,17 @@ void generatecoder(cons_t *treehead, func_t *func, int r)
 			func->index++;
 			break;
 		}
+
+	/* case T_STRING: */
+	/* 	eval_pointer = treehead->cdr; */
+	/* 	if(strcmp(treehead->svalue, "if") == 0) { */
+	/* 		generatecoder(eval_pointer, func, r); */
+	/* 		func->code[func->index].op = IF; */
+	/* 		func->code[func->index].reg0 = r; */
+	/* 		func->code[func->index].reg1 = r; */
+	/* 		func->code[func->index].reg2 = r+1; */
+	/* 		func->index++; */
+	/* 		break; */
 	}
 }
 
