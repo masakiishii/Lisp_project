@@ -1,13 +1,14 @@
 CC=gcc
 TARGET=ilispvm
 LDLIBS=-lreadline
-CFLAGS=-g3 -O0 -W -Wall
+CFLAGS=-g0 -O2 -W -Wall
 OBJS=\
 	mainvm.o \
     tokenvm.o \
     parservm.o \
 	generatecode.o \
-	vm.o
+	vm.o \
+	hash.o
 
 .PHONY: all
 all:	$(TARGET)
@@ -29,6 +30,9 @@ generatecode.o: generatecode.c ilispvm.h
 	$(CC) $(CFLAGS) -c $^
 
 vm.o: vm.c ilispvm.h
+	$(CC) $(CFLAGS) -c $^
+
+hash.o: hash.c ilispvm.h
 	$(CC) $(CFLAGS) -c $^
 
 .PHONY: clean

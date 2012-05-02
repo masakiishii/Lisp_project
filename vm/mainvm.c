@@ -34,7 +34,7 @@ void file_main(char **argv)
 	if(fp == NULL) {
 		printf("file not open.");
 	}else{
-
+		int reg[256];
 		while(fgets(input, 1024, fp) != NULL) {
 			printf("%s\n", input);
 			tokenized_buf = tokenize(input);
@@ -42,10 +42,12 @@ void file_main(char **argv)
 			tree_head = parse(tokenized_buf);
 			func = (func_t *)malloc(sizeof(func_t));
 			func->index = 0;
+			func->cons = tree_head;
 			generatecoder(tree_head, func, 0);
 			func->code[func->index].op = RET;
 			func->code[func->index].reg0 = 0;
-			fprintf(stderr, "%d\n", vm_run(func->code));
+
+			fprintf(stderr, "%d\n", vm_run(func->code, reg));
 			
 		}
 	}

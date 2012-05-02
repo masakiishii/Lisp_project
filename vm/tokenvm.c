@@ -72,8 +72,8 @@ number:     *tokens = parse_number(buf);
 		default:
 			*tokens = parse_symbol(buf);
 			tokens++;
-			while(*buf != ' '){
-				buf;
+			while(isalpha(*buf)){
+				buf++;
 			}
 			buf-=1;
 			break;
@@ -132,7 +132,7 @@ token_t parse_symbol(char *buf)
 	char *buf_current = buf;
 	token_t parse_num;
 
-	while(*buf_current != ' '){
+	while(isalpha(*buf_current)){
 		buf_current++;
 	}
 	parse_num.str = strndup(buf, buf_current - buf);
