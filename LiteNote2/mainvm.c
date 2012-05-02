@@ -37,7 +37,7 @@ void readline_main(void)
 		generatecoder(tree_head, func, 0);
 		func->code[func->index].op = RET;
 		func->code[func->index].reg0 = 0;
-		fprintf(stderr, "%d\n", vm_run(func->code, reg));
+		fprintf(stdout, "%d\n", vm_run(func->code, reg));
 	}
 }
 
