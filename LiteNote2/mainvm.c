@@ -22,8 +22,8 @@ void readline_main(void)
 	int reg[256];
 	
 	while(1) {
-		input = (char *)readline(">>>");
-		add_history(input);
+		/* input = (char *)readline(">>>"); */
+		/* add_history(input); */
 		if(input == NULL){
 			break;
 		}
