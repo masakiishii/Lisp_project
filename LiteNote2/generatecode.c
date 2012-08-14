@@ -171,6 +171,8 @@ void generatecoder(cons_t *treehead, func_t *func, int r)
 		}
 		break;
 	}
+	default :
+		break;
   }
 }
 

@@ -43,6 +43,9 @@ cons_t *parse(token_t *t)
 		treehead->cdr = parse(treePointer);
 		break;
 
+	default :
+		break;
+
 	}
 	return treehead;
 }

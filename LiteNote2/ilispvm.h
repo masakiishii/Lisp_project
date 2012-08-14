@@ -83,7 +83,7 @@ typedef struct f_table {
 //=====global value=====
 extern int token_pointer;
 extern token_t *treePointer;
-extern f_null_flag;
+extern int f_null_flag;
 
 //=====function=======
 char *skip_space(char *);
@@ -100,8 +100,8 @@ int main(int, char **);
 void readline_main(void);
 void file_main(char **);
 int hash(char*);
-void make_hashtable_null(cons_t *h_val[]);
+void make_hashtable_null(f_table **);
 void hash_put(char *,func_t *);
 func_t *search_func_hash(char *);
-
+void generatecoder(cons_t *, func_t *, int);
 #endif 

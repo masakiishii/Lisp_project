@@ -46,10 +46,7 @@ void file_main(char **argv)
 {
 	token_t *tokenized_buf;
 	cons_t *tree_head;
-	cons_t *free_pointer;
 	func_t *func;
-
-
 	char input[1024];
 	FILE *fp = NULL;
 

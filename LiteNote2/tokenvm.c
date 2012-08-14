@@ -3,7 +3,7 @@
 
 char *skip_space(char *buf)
 {
-	while (*buf != NULL) {
+	while (buf != NULL) {
 		char c = *buf;
 		switch (c) {
 		case ' '  :
@@ -19,7 +19,6 @@ char *skip_space(char *buf)
 token_t *tokenize(char *buf)
 {
 	token_t *tokens = (token_t *)malloc(sizeof(token_t) * TOKENSIZE);
-	token_t *pointer;
 	token_t *head = tokens;
 
 	while (*buf != '\n') {

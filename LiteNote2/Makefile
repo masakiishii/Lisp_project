@@ -2,7 +2,7 @@ CC=gcc
 TARGET=ilispvm
 LDLIBS=-lreadline
 #CFLAGS=-g0 -O2 -W -Wall
-CFLAGS=-g0 -O2 -W -Wall
+CFLAGS=-g3 -O0 -W -Wall
 OBJS=\
 	mainvm.o \
     tokenvm.o \

@@ -9,7 +9,7 @@ int hash(char *c)
 	return (c[0] % HASH_BACKET);
 }
 
-void make_hashtable_null(cons_t *h_val[])
+void make_hashtable_null(f_table **h_val)
 {
 	int i;
 	for(i = 0;i < HASH_BACKET; i++)
