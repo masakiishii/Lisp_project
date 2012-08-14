@@ -16,8 +16,8 @@ OBJS=\
 all:	$(TARGET)
 
 $(TARGET): $(OBJS)
-	$(CC) $(LDLIBS) -o $@ $^
-#	$(CC) $(CFLAGS) $(LDLIBS) -o $(TARGET) $^
+#	$(CC) -o $@ $^ $(LDLIBS) 
+	$(CC) $(CFLAGS) -o $@ $^  $(LDLIBS)
 
 main.o: main.c ilisp.h
 	$(CC) $(CFLAGS) -c $^

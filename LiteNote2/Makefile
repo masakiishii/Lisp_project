@@ -15,8 +15,8 @@ OBJS=\
 all:	$(TARGET)
 
 $(TARGET): $(OBJS)
-	$(CC) $(LDLIBS) -o $@ $^
-#	$(CC) $(CFLAGS) $(LDLIBS) -o $(TARGET) $^
+#	$(CC) $(LDLIBS) -o $@ $^
+	$(CC) $(CFLAGS) -o $(TARGET) $^ $(LDLIBS)
 
 mainvm.o: mainvm.c ilispvm.h
 	$(CC) $(CFLAGS) -c $^
