@@ -43,3 +43,4 @@ clean:
 .PHONY: test
 test:
 	./$(TARGET) < test.lisp
+
