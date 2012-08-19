@@ -2,14 +2,14 @@ CC=gcc
 TARGET=ilispvm
 LDLIBS=-lreadline
 #CFLAGS=-g0 -O2 -W -Wall
-CFLAGS=-g3 -O0 -W -Wall
+CFLAGS=-g3 -O0 -W -Wall -I./include/
 OBJS=\
-	mainvm.o \
-    tokenvm.o \
-    parservm.o \
-	generatecode.o \
-	vm.o \
-	hash.o
+	build/mainvm.o \
+    build/tokenvm.o \
+    build/parservm.o \
+	build/generatecode.o \
+	build/vm.o \
+	build/hash.o
 
 .PHONY: all
 all:	$(TARGET)
@@ -18,23 +18,23 @@ $(TARGET): $(OBJS)
 #	$(CC) $(LDLIBS) -o $@ $^
 	$(CC) $(CFLAGS) -o $(TARGET) $^ $(LDLIBS)
 
-mainvm.o: mainvm.c ilispvm.h
-	$(CC) $(CFLAGS) -c $^
+build/mainvm.o: src/mainvm.c # include/ilispvm.h
+	$(CC) $(CFLAGS) -o $@ -c $^
 
-tokenvm.o: tokenvm.c ilispvm.h
-	$(CC) $(CFLAGS) -c $^
+build/tokenvm.o: src/tokenvm.c # include/ilispvm.h
+	$(CC) $(CFLAGS) -o $@ -c $^
 
-parservm.o: parservm.c ilispvm.h
-	$(CC) $(CFLAGS) -c $^
+build/parservm.o: src/parservm.c # include/ilispvm.h
+	$(CC) $(CFLAGS) -o $@ -c $^
 
-generatecode.o: generatecode.c ilispvm.h
-	$(CC) $(CFLAGS) -c $^
+build/generatecode.o: src/generatecode.c # include/ilispvm.h
+	$(CC) $(CFLAGS) -o $@ -c $^
 
-vm.o: vm.c ilispvm.h
-	$(CC) $(CFLAGS) -c $^
+build/vm.o: src/vm.c # include/ilispvm.h
+	$(CC) $(CFLAGS) -o $@ -c $^
 
-hash.o: hash.c ilispvm.h
-	$(CC) $(CFLAGS) -c $^
+build/hash.o: src/hash.c # include/ilispvm.h
+	$(CC) $(CFLAGS) -o $@ -c $^
 
 .PHONY: clean
 clean:
