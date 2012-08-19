@@ -1,8 +1,8 @@
 CC=gcc
 TARGET=ilispvm
 LDLIBS=-lreadline
-#CFLAGS=-g0 -O2 -W -Wall
-CFLAGS=-g3 -O0 -W -Wall -I./include/
+CFLAGS=-O2 -W -Wall -I./include/
+#CFLAGS=-g3 -O0 -W -Wall -I./include/
 OBJS=\
 	build/mainvm.o \
     build/tokenvm.o \

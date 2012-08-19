@@ -95,7 +95,7 @@ token_t parse_operater(char *);
 token_t parse_number(char *);
 token_t parse_symbol(char *);
 cons_t *parse(token_t *);
-int vm_run(bytecode_t *,int*);
+int VirtualMachine_DirectThreadedCode_Run(bytecode_t *,int*);
 int main(int, char **);
 void readline_main(void);
 void file_main(char **);

@@ -1,89 +1,102 @@
 #include "ilispvm.h"
 
-int vm_run(bytecode_t *op, int *sp)
+int VirtualMachine_DirectThreadedCode_Run(bytecode_t *op, int *sp)
 {
-	bytecode_t *pc;
+	bytecode_t *opcode = op;
 
-	while(1) {
-		pc = op;
+	static void *VM_Instruction_Table[] = {
+		&&SET, &&ADD, &&SUB, &&MULT, &&DEV,
+		&&LESSTHAN, &&L_EQUAL, &&GREATERTHAN,
+		&&G_EQUAL, &&IF, &&JUMP, &&DEFUN, &&MOV, &&CALL, &&RET
+	};
 
-		switch (pc->op) {
-		case SET:
-			sp[pc->reg0] = pc->data1;
-			break;
+	goto *VM_Instruction_Table[opcode->op];
 
-		case ADD:
-			sp[pc->reg0] = sp[pc->reg1] + sp[pc->reg2];
-			break;
+SET:
+	sp[opcode->reg0] = opcode->data1;
+	opcode++;
+	goto *VM_Instruction_Table[opcode->op];
 
-		case SUB:
-			sp[pc->reg0] = sp[pc->reg1] - sp[pc->reg2];
-			break;
+ADD:
+	sp[opcode->reg0] = sp[opcode->reg1] + sp[opcode->reg2];
+	opcode++;
+	goto *VM_Instruction_Table[opcode->op];
 
-		case MULT:
-			sp[pc->reg0] = sp[pc->reg1] * sp[pc->reg2];
-			break;
+SUB:
+	sp[opcode->reg0] = sp[opcode->reg1] - sp[opcode->reg2];
+	opcode++;
+	goto *VM_Instruction_Table[opcode->op];
 
-		case DEV:
-			sp[pc->reg0] = sp[pc->reg1] / sp[pc->reg2];
-			break;
+MULT:
+	sp[opcode->reg0] = sp[opcode->reg1] * sp[opcode->reg2];
+	opcode++;
+	goto *VM_Instruction_Table[opcode->op];
 
-		case LESSTHAN:
-			if(sp[pc->reg1] < sp[pc->reg2]) {
-				sp[pc->reg0] = 1;
-			}else{
-				sp[pc->reg0] = 0;
-			}
-			break;
+DEV:
+	sp[opcode->reg0] = sp[opcode->reg1] / sp[opcode->reg2];
+	opcode++;
+	goto *VM_Instruction_Table[opcode->op];
 
-		case L_EQUAL:
-			if(sp[pc->reg1] <= sp[pc->reg2]) {
-				sp[pc->reg0] = 1;
-			}else{
-				sp[pc->reg0] = 0;
-			}
-			break;
-
-		case GREATERTHAN:
-			if(sp[pc->reg1] > sp[pc->reg2]) {
-				sp[pc->reg0] = 1;
-			}else{
-				sp[pc->reg0] = 0;
-			}
-			break;
-
-		case G_EQUAL:
-			if(sp[pc->reg1] >= sp[pc->reg2]) {
-				sp[pc->reg0] = 1;
-			}else{
-				sp[pc->reg0] = 0;
-			}
-			break;
-		case IF:
-			if(sp[pc->reg0] == 0) {
-				op = pc->pc2;
-				continue;
-			}
-			break;
-
-		case JUMP:
-				op = pc->pc2;
-				continue;
-
-		case MOV:
-			sp[pc->reg0] = sp[pc->reg1];
-			break;
-
-		case CALL:
-			sp[pc->reg0] = vm_run(pc->pc2, sp+pc->reg0);
-			break;
-				
-		case RET:
-			return sp[pc->reg0];
-
-		default:
-			abort();
-		}
-		op++;
+LESSTHAN:
+	if(sp[opcode->reg1] < sp[opcode->reg2]) {
+		sp[opcode->reg0] = 1;
+	}else{
+		sp[opcode->reg0] = 0;
 	}
+	opcode++;
+	goto *VM_Instruction_Table[opcode->op];
+
+L_EQUAL:
+	if(sp[opcode->reg1] <= sp[opcode->reg2]) {
+		sp[opcode->reg0] = 1;
+	}else{
+		sp[opcode->reg0] = 0;
+	}
+	opcode++;
+	goto *VM_Instruction_Table[opcode->op];
+
+GREATERTHAN:
+	if(sp[opcode->reg1] > sp[opcode->reg2]) {
+		sp[opcode->reg0] = 1;
+	}else{
+		sp[opcode->reg0] = 0;
+	}
+	opcode++;
+	goto *VM_Instruction_Table[opcode->op];
+
+G_EQUAL:
+	if(sp[opcode->reg1] >= sp[opcode->reg2]) {
+		sp[opcode->reg0] = 1;
+	}else{
+		sp[opcode->reg0] = 0;
+	}
+	opcode++;
+	goto *VM_Instruction_Table[opcode->op];
+
+IF:
+	if(sp[opcode->reg0] == 0) {
+		opcode = opcode->pc2;
+	}else{
+		opcode++;
+	}
+	goto *VM_Instruction_Table[opcode->op];
+
+JUMP:
+	opcode = opcode->pc2;
+	goto *VM_Instruction_Table[opcode->op];
+
+DEFUN:
+
+MOV:
+	sp[opcode->reg0] = sp[opcode->reg1];
+	opcode++;
+	goto *VM_Instruction_Table[opcode->op];
+
+CALL:
+	sp[opcode->reg0] = VirtualMachine_DirectThreadedCode_Run(opcode->pc2, sp+opcode->reg0);
+	opcode++;
+	goto *VM_Instruction_Table[opcode->op];
+
+RET:
+	return sp[opcode->reg0];
 }
