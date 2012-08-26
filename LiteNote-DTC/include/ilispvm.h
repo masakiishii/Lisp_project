@@ -10,6 +10,8 @@
 
 #define HASH_BACKET 64
 #define TOKENSIZE 1024
+#define ON 1
+#define OFF 0
 
 typedef enum Type {
 	T_BEGIN,
@@ -84,6 +86,7 @@ typedef struct f_table {
 extern int token_pointer;
 extern token_t *treePointer;
 extern int f_null_flag;
+extern int defun_flag;
 
 //=====function=======
 char *skip_space(char *);

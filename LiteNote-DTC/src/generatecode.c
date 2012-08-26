@@ -1,5 +1,7 @@
 #include "ilispvm.h"
 
+int defun_flag;
+
 void generatecoder(cons_t *treehead, func_t *func, int r)
 {
 	cons_t *eval_pointer;
@@ -31,6 +33,7 @@ void generatecoder(cons_t *treehead, func_t *func, int r)
 			func->code[jump_index].pc2 = &func->code[func->index];
 			break;
 		}else if(strncmp(treehead->svalue, "defun", sizeof("defun")+1) == 0) {
+			defun_flag = ON;
 			int counter = 0;
 			cons_t *arg = treehead->cdr->cdr->car;
 			while(arg != NULL) {

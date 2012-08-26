@@ -37,7 +37,10 @@ void readline_main(void)
 		generatecoder(tree_head, func, 0);
 		func->code[func->index].op = RET;
 		func->code[func->index].reg0 = 0;
-		fprintf(stdout, "%d\n", VirtualMachine_DirectThreadedCode_Run(func->code, reg));
+		if(defun_flag == OFF) {
+			fprintf(stdout, "%d\n", VirtualMachine_DirectThreadedCode_Run(func->code, reg));
+		}
+		defun_flag = OFF;
 	}
 }
 
@@ -69,7 +72,10 @@ void file_main(char **argv)
 			generatecoder(tree_head, func, 0);
 			func->code[func->index].op = RET;
 			func->code[func->index].reg0 = 0;
-			fprintf(stderr, "%d\n", VirtualMachine_DirectThreadedCode_Run(func->code, reg));
+			if(defun_flag == OFF) {
+				fprintf(stderr, "hoge%d\n", VirtualMachine_DirectThreadedCode_Run(func->code, reg));
+			}
+			defun_flag = OFF;
 		}
 		//size_t i;
 		//for (i = 0; i < funcnum; i++) {

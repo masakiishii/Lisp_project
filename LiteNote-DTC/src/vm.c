@@ -4,9 +4,10 @@
 
 int VirtualMachine_DirectThreadedCode_Run(bytecode_t *op, int *sp)
 {
-	bytecode_t *opcode = op;
+	register bytecode_t *opcode = op;
+	register int *Reg = sp;
 
-	static void *VM_Instruction_Table[] = {
+	static const void *VM_Instruction_Table[] = {
 		&&SET, &&ADD, &&SUB, &&MULT, &&DEV,
 		&&LESSTHAN, &&L_EQUAL, &&GREATERTHAN,
 		&&G_EQUAL, &&IF, &&JUMP, &&DEFUN, &&MOV, &&CALL, &&RET
@@ -15,68 +16,68 @@ int VirtualMachine_DirectThreadedCode_Run(bytecode_t *op, int *sp)
 	goto OP_NEXT;
 
 SET:
-	sp[opcode->reg0] = opcode->data1;
+	Reg[opcode->reg0] = opcode->data1;
 	opcode++;
 	goto OP_NEXT;
 
 ADD:
-	sp[opcode->reg0] = sp[opcode->reg1] + sp[opcode->reg2];
+	Reg[opcode->reg0] = Reg[opcode->reg1] + Reg[opcode->reg2];
 	opcode++;
 	goto OP_NEXT;
 
 SUB:
-	sp[opcode->reg0] = sp[opcode->reg1] - sp[opcode->reg2];
+	Reg[opcode->reg0] = Reg[opcode->reg1] - Reg[opcode->reg2];
 	opcode++;
 	goto OP_NEXT;
 
 MULT:
-	sp[opcode->reg0] = sp[opcode->reg1] * sp[opcode->reg2];
+	Reg[opcode->reg0] = Reg[opcode->reg1] * Reg[opcode->reg2];
 	opcode++;
 	goto OP_NEXT;
 
 DEV:
-	sp[opcode->reg0] = sp[opcode->reg1] / sp[opcode->reg2];
+	Reg[opcode->reg0] = Reg[opcode->reg1] / Reg[opcode->reg2];
 	opcode++;
 	goto OP_NEXT;
 
 LESSTHAN:
-	if(sp[opcode->reg1] < sp[opcode->reg2]) {
-		sp[opcode->reg0] = 1;
+	if(Reg[opcode->reg1] < Reg[opcode->reg2]) {
+		Reg[opcode->reg0] = 1;
 	}else{
-		sp[opcode->reg0] = 0;
+		Reg[opcode->reg0] = 0;
 	}
 	opcode++;
 	goto OP_NEXT;
 
 L_EQUAL:
-	if(sp[opcode->reg1] <= sp[opcode->reg2]) {
-		sp[opcode->reg0] = 1;
+	if(Reg[opcode->reg1] <= Reg[opcode->reg2]) {
+		Reg[opcode->reg0] = 1;
 	}else{
-		sp[opcode->reg0] = 0;
+		Reg[opcode->reg0] = 0;
 	}
 	opcode++;
 	goto OP_NEXT;
 
 GREATERTHAN:
-	if(sp[opcode->reg1] > sp[opcode->reg2]) {
-		sp[opcode->reg0] = 1;
+	if(Reg[opcode->reg1] > Reg[opcode->reg2]) {
+		Reg[opcode->reg0] = 1;
 	}else{
-		sp[opcode->reg0] = 0;
+		Reg[opcode->reg0] = 0;
 	}
 	opcode++;
 	goto OP_NEXT;
 
 G_EQUAL:
-	if(sp[opcode->reg1] >= sp[opcode->reg2]) {
-		sp[opcode->reg0] = 1;
+	if(Reg[opcode->reg1] >= Reg[opcode->reg2]) {
+		Reg[opcode->reg0] = 1;
 	}else{
-		sp[opcode->reg0] = 0;
+		Reg[opcode->reg0] = 0;
 	}
 	opcode++;
 	goto OP_NEXT;
 
 IF:
-	if(sp[opcode->reg0] == 0) {
+	if(Reg[opcode->reg0] == 0) {
 		opcode = opcode->pc2;
 	}else{
 		opcode++;
@@ -90,15 +91,15 @@ JUMP:
 DEFUN:
 
 MOV:
-	sp[opcode->reg0] = sp[opcode->reg1];
+	Reg[opcode->reg0] = Reg[opcode->reg1];
 	opcode++;
 	goto OP_NEXT;
 
 CALL:
-	sp[opcode->reg0] = VirtualMachine_DirectThreadedCode_Run(opcode->pc2, sp+opcode->reg0);
+	Reg[opcode->reg0] = VirtualMachine_DirectThreadedCode_Run(opcode->pc2, Reg+opcode->reg0);
 	opcode++;
 	goto OP_NEXT;
 
 RET:
-	return sp[opcode->reg0];
+	return Reg[opcode->reg0];
 }
