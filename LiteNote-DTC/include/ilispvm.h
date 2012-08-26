@@ -8,6 +8,19 @@
 #include <string.h>
 #include <ctype.h>
 
+
+#ifdef DEBUG_MODE
+#define DBG_P(...) {\
+		fprintf(stderr, "[%s:%d] ", __FILE__, __LINE__);	\
+		fprintf(stderr, __VA_ARGS__);						\
+		fprintf(stderr, "\n");								\
+	}											
+#else
+#define DBG_P(...) {	\
+	}
+#endif
+
+
 #define HASH_BACKET 64
 #define TOKENSIZE 1024
 #define ON 1
