@@ -2,7 +2,7 @@ CC=gcc
 TARGET=ilispvm
 LDLIBS=-lreadline
 #CFLAGS=-O2 -W -Wall -I./include/
-CFLAGS=-g3 -O0 -DDEBUG_MODE -W -Wall -I./include/
+CFLAGS=-g3 -O0 -DDEBUG_MODE=1 -W -Wall -I./include/
 OBJS=\
 	build/mainvm.o \
     build/tokenvm.o \

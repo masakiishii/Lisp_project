@@ -7,59 +7,59 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
-
-
+		/* fprintf(stderr, "[%s:%d] ", __FILE__, __LINE__);		\ */
+//=======<<<DEBUG MODE>>>=======
 #ifdef DEBUG_MODE
-#define DBG_P(...) {\
-		fprintf(stderr, "[%s:%d] ", __FILE__, __LINE__);	\
-		fprintf(stderr, __VA_ARGS__);						\
+#define DBG_P(fmt, ...) {\
+		fprintf(stderr, fmt, ##__VA_ARGS__);					\
 		fprintf(stderr, "\n");								\
 	}											
 #else
-#define DBG_P(...) {	\
+#define DBG_P(fmt, ...) {						\
 	}
 #endif
-
+//==============================
 
 #define HASH_BACKET 64
 #define TOKENSIZE 1024
 #define ON 1
 #define OFF 0
 
-typedef enum Type {
+
+
+typedef enum CellType {
 	T_BEGIN,
 	T_END,
 	T_OPERATOR,
 	T_NUMBER,
 	T_STRING
-} Type;
+} CellType;
 
-
-enum opcode {
-	SET,
-	ADD,
-	SUB,
-	MULT,
-	DEV,
-	LESSTHAN,
-	L_EQUAL,
-	GREATERTHAN,
-	G_EQUAL,
-	IF,
-	JUMP,
-	DEFUN,
-	MOV,
-	CALL,
-	RET
+enum OpCode {
+	OPLOAD,
+	OPADD,
+	OPSUB,
+	OPMUL,
+	OPDEV,
+	OPLT,
+	OPLEQ,
+	OPGT,
+	OPGEQ,
+	OPIF,
+	OPJMP,
+	OPDEFUN,
+	OPMOV,
+	OPCALL,
+	OPRET
 };
 
 typedef struct Token_t {
-	Type type;
+	CellType type;
 	char *str;
 } Token_t;
 
 typedef struct ConsCell_t {
-	Type type;
+	CellType celltype;
 	union {
 		struct ConsCell_t *car;
 		int ivalue;
@@ -69,7 +69,7 @@ typedef struct ConsCell_t {
 } ConsCell_t;
 
 typedef struct ByteCode_t {
-	enum opcode op;
+	enum OpCode op;
 	int reg0;
 	union {
 		int reg1;
@@ -95,23 +95,23 @@ typedef struct FuncTable_t {
 } FuncTable_t;
 
 
-//=====global value=====
+//=====<<<Global Value>>>=====
 extern int token_pointer;
-extern Token_t *treePointer;
+extern char **treePointer;
 extern int f_null_flag;
+extern int setq_flag;
 extern int defun_flag;
+extern int defun_call;
 
-//=====function=======
-char *skip_space(char *);
-Token_t *tokenize(char *);
-void push_token(Token_t *, Token_t *);
-Token_t parse_begin(char *);
-Token_t parse_end(char *);
-Token_t parse_operater(char *);
-Token_t parse_number(char *);
-Token_t parse_symbol(char *);
-ConsCell_t *parse(Token_t *);
+
+//=====<<<Function>>=======
+char **tokenize(char *);
+void Dump_Token(char **);
+ConsCell_t *new_ConsCell(void);
+ConsCell_t *parse(char **);
+void Tree_Dump(ConsCell_t *, int);
 int VirtualMachine_DirectThreadedCode_Run(ByteCode_t *,int*);
+void VirtualMachine_ByteCode_Dump(ByteCode_t *);
 int main(int, char **);
 void readline_main(void);
 void file_main(char **);

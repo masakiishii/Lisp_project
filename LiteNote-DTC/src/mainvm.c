@@ -15,7 +15,7 @@ int main(int argc, char **argv)
 
 void readline_main(void)
 {
-	Token_t *tokenized_buf;
+	char **tokenized_buf;
 	ConsCell_t *tree_head;
 	VM_Instruction_Set *func;
 	char *input;
@@ -35,7 +35,7 @@ void readline_main(void)
 		func->index = 0;
 		func->cons = tree_head;
 		generatecoder(tree_head, func, 0);
-		func->code[func->index].op = RET;
+		func->code[func->index].op = OPRET;
 		func->code[func->index].reg0 = 0;
 		if(defun_flag == OFF) {
 			fprintf(stdout, "%d\n", VirtualMachine_DirectThreadedCode_Run(func->code, reg));
@@ -47,7 +47,7 @@ void readline_main(void)
 
 void file_main(char **argv)
 {
-	Token_t *tokenized_buf;
+	char **tokenized_buf;
 	ConsCell_t *tree_head;
 	VM_Instruction_Set *func;
 	char input[1024];
@@ -66,12 +66,14 @@ void file_main(char **argv)
 			tokenized_buf = tokenize(input);
 			treePointer = tokenized_buf;
 			tree_head = parse(tokenized_buf);
+			Tree_Dump(tree_head, 0);
 			func = (VM_Instruction_Set *)malloc(sizeof(VM_Instruction_Set));
 			func->index = 0;
 			func->cons = tree_head;
 			generatecoder(tree_head, func, 0);
-			func->code[func->index].op = RET;
+			func->code[func->index].op = OPRET;
 			func->code[func->index].reg0 = 0;
+
 			if(defun_flag == OFF) {
 				fprintf(stderr, "%d\n", VirtualMachine_DirectThreadedCode_Run(func->code, reg));
 			}

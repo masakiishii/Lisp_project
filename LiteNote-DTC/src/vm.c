@@ -2,45 +2,107 @@
 
 #define OP_NEXT *VM_Instruction_Table[opcode->op]
 
+void VirtualMachine_ByteCode_Dump(ByteCode_t *vmcode)
+{
+	DBG_P("=====<<<VirtualMachine_ByteCode_Dump>>>=====");
+	switch(vmcode->op) {
+	case OPLOAD:
+		DBG_P("OPLOAD :");
+		break;
+	case OPADD:
+		DBG_P("OPADD :");
+		break;
+	case OPSUB:
+		DBG_P("OPSUB :");
+		break;
+	case OPMUL:
+		DBG_P("OPMUL :");
+		break;
+	case OPDEV:
+		DBG_P("OPDEV :");
+		break;
+	case OPLT :
+		DBG_P("OPLT :");
+		break;
+	case OPLEQ:
+		DBG_P("OPLEQ :");
+		break;
+	case OPGT :
+		DBG_P("OPGT :");
+		break;
+	case OPGEQ:
+		DBG_P("OPGEQ :");
+		break;
+	case OPIF :
+		DBG_P("OPIF :");
+		break;
+	case OPJMP :
+		DBG_P("OPJMP :");
+		break;
+	case OPDEFUN :
+		DBG_P("OPDEFUN :");
+		break;
+	case OPMOV :
+		DBG_P("OPMOV :");
+		break;
+	case OPCALL :
+		DBG_P("OPCALL :");
+		break;
+	case OPRET :
+		DBG_P("OPRET :");
+		break;
+	}
+}
+
+#define Code_Dump(C)  VirtualMachine_ByteCode_Dump(C)
+
 int VirtualMachine_DirectThreadedCode_Run(ByteCode_t *op, int *sp)
 {
+	DBG_P("=====<<<VirtualMachine_DirectThreadedCode_Run>>>=====");
+
 	register ByteCode_t *opcode = op;
 	register int *Reg = sp;
 
 	static const void *VM_Instruction_Table[] = {
-		&&SET, &&ADD, &&SUB, &&MULT, &&DEV,
-		&&LESSTHAN, &&L_EQUAL, &&GREATERTHAN,
-		&&G_EQUAL, &&IF, &&JUMP, &&DEFUN, &&MOV, &&CALL, &&RET
+		&&OPLOAD, &&OPADD, &&OPSUB, &&OPMUL, &&OPDEV,
+		&&OPLT, &&OPLEQ, &&OPGT,
+		&&OPGEQ, &&OPIF, &&OPJMP, &&OPDEFUN, &&OPMOV, &&OPCALL, &&OPRET
 	};
 
 	goto OP_NEXT;
 
-SET:
+OPLOAD:
+	Code_Dump(opcode);
 	Reg[opcode->reg0] = opcode->data1;
 	opcode++;
 	goto OP_NEXT;
 
-ADD:
+OPADD:
+	Code_Dump(opcode);
 	Reg[opcode->reg0] = Reg[opcode->reg1] + Reg[opcode->reg2];
 	opcode++;
 	goto OP_NEXT;
 
-SUB:
+OPSUB:
+	Code_Dump(opcode);
 	Reg[opcode->reg0] = Reg[opcode->reg1] - Reg[opcode->reg2];
 	opcode++;
 	goto OP_NEXT;
 
-MULT:
+OPMUL:
+	Code_Dump(opcode);
 	Reg[opcode->reg0] = Reg[opcode->reg1] * Reg[opcode->reg2];
 	opcode++;
 	goto OP_NEXT;
 
-DEV:
+OPDEV:
+	Code_Dump(opcode);
 	Reg[opcode->reg0] = Reg[opcode->reg1] / Reg[opcode->reg2];
 	opcode++;
 	goto OP_NEXT;
 
-LESSTHAN:
+OPLT:
+	Code_Dump(opcode);
 	if(Reg[opcode->reg1] < Reg[opcode->reg2]) {
 		Reg[opcode->reg0] = 1;
 	}else{
@@ -49,7 +111,8 @@ LESSTHAN:
 	opcode++;
 	goto OP_NEXT;
 
-L_EQUAL:
+OPLEQ:
+	Code_Dump(opcode);
 	if(Reg[opcode->reg1] <= Reg[opcode->reg2]) {
 		Reg[opcode->reg0] = 1;
 	}else{
@@ -58,7 +121,8 @@ L_EQUAL:
 	opcode++;
 	goto OP_NEXT;
 
-GREATERTHAN:
+OPGT:
+	Code_Dump(opcode);
 	if(Reg[opcode->reg1] > Reg[opcode->reg2]) {
 		Reg[opcode->reg0] = 1;
 	}else{
@@ -67,7 +131,8 @@ GREATERTHAN:
 	opcode++;
 	goto OP_NEXT;
 
-G_EQUAL:
+OPGEQ:
+	Code_Dump(opcode);
 	if(Reg[opcode->reg1] >= Reg[opcode->reg2]) {
 		Reg[opcode->reg0] = 1;
 	}else{
@@ -76,7 +141,8 @@ G_EQUAL:
 	opcode++;
 	goto OP_NEXT;
 
-IF:
+OPIF:
+	Code_Dump(opcode);
 	if(Reg[opcode->reg0] == 0) {
 		opcode = opcode->pc2;
 	}else{
@@ -84,22 +150,27 @@ IF:
 	}
 	goto OP_NEXT;
 
-JUMP:
+OPJMP:
+	Code_Dump(opcode);
 	opcode = opcode->pc2;
 	goto OP_NEXT;
 
-DEFUN:
+OPDEFUN:
 
-MOV:
+OPMOV:
+	Code_Dump(opcode);
 	Reg[opcode->reg0] = Reg[opcode->reg1];
 	opcode++;
 	goto OP_NEXT;
 
-CALL:
+OPCALL:
+	Code_Dump(opcode);
 	Reg[opcode->reg0] = VirtualMachine_DirectThreadedCode_Run(opcode->pc2, Reg+opcode->reg0);
 	opcode++;
 	goto OP_NEXT;
 
-RET:
+OPRET:
+	Code_Dump(opcode);
 	return Reg[opcode->reg0];
 }
+
