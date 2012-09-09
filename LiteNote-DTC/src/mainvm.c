@@ -84,7 +84,5 @@ void file_main(char **argv)
 		//	free(funclist[i]);
 		//}
 	}
-	free(treePointer);
-
 	fclose(fp);
 }

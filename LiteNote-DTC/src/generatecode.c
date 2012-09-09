@@ -82,7 +82,7 @@ void generatecoder(ConsCell_t *treehead, VM_Instruction_Set *func, int r)
 		if(strncmp(treehead->svalue, "+", sizeof("+")+1) == 0) {
 			DBG_P("=====<<<OPADD>>>=====");
 			generatecoder(eval_pointer, func, r);
-			while((eval_pointer->celltype != T_END)){
+			while((eval_pointer->cdr->celltype != T_END)){
 				generatecoder(eval_pointer->cdr, func, r+1);
 				func->code[func->index].op = OPADD;
 				func->code[func->index].reg0 = r;
@@ -95,7 +95,7 @@ void generatecoder(ConsCell_t *treehead, VM_Instruction_Set *func, int r)
 		}else if(strncmp(treehead->svalue, "-", sizeof("-")) == 0) {
 			DBG_P("=====<<<OPSUB>>>=====");
 			generatecoder(eval_pointer, func, r);
-			while(eval_pointer->cdr != NULL){
+			while((eval_pointer->cdr->celltype != T_END)){
 				generatecoder(eval_pointer->cdr, func, r+1);
 				func->code[func->index].op = OPSUB;
 				func->code[func->index].reg0 = r;
@@ -108,7 +108,7 @@ void generatecoder(ConsCell_t *treehead, VM_Instruction_Set *func, int r)
 		}else if(strncmp(treehead->svalue, "*", sizeof("*")) == 0) {
 			DBG_P("=====<<<OPMUL>>>=====");
 			generatecoder(eval_pointer, func, r);
-			while(eval_pointer->cdr != NULL){
+			while((eval_pointer->cdr->celltype != T_END)){
 				generatecoder(eval_pointer->cdr, func, r+1);
 				func->code[func->index].op = OPMUL;
 				func->code[func->index].reg0 = r;
@@ -121,7 +121,7 @@ void generatecoder(ConsCell_t *treehead, VM_Instruction_Set *func, int r)
 		}else if(strncmp(treehead->svalue, "/", sizeof("/")) == 0) {
 			DBG_P("=====<<<OPDEV>>>=====");
 			generatecoder(eval_pointer, func, r);
-			while(eval_pointer->cdr != NULL){
+			while((eval_pointer->cdr->celltype != T_END)){
 				generatecoder(eval_pointer->cdr, func, r+1);
 				func->code[func->index].op = OPDEV;
 				func->code[func->index].reg0 = r;
