@@ -53,22 +53,22 @@ enum opcode {
 	RET
 };
 
-typedef struct token {
+typedef struct Token_t {
 	Type type;
 	char *str;
-} token_t;
+} Token_t;
 
-typedef struct cons_t {
+typedef struct ConsCell_t {
 	Type type;
 	union {
-		struct cons_t *car;
+		struct ConsCell_t *car;
 		int ivalue;
 		char *svalue;
 	};
-	struct cons_t *cdr;
-} cons_t;
+	struct ConsCell_t *cdr;
+} ConsCell_t;
 
-typedef struct op {
+typedef struct ByteCode_t {
 	enum opcode op;
 	int reg0;
 	union {
@@ -78,46 +78,46 @@ typedef struct op {
 	union {
 		int reg2;
 		int data2;
-		struct op *pc2;
+		struct ByteCode_t *pc2;
 	};
-} bytecode_t;
+} ByteCode_t;
 
-typedef struct func_t {
-	bytecode_t code[256];
+typedef struct VM_Instruction_Set {
+	ByteCode_t code[256];
 	int index;
-	cons_t *cons;
-} func_t;
+	ConsCell_t *cons;
+} VM_Instruction_Set;
 
-typedef struct f_table {
-	func_t *fn_t;
+typedef struct FuncTable_t {
+	VM_Instruction_Set *fn_t;
 	char *key;
-	struct f_table *next;
-} f_table;
+	struct FuncTable_t *next;
+} FuncTable_t;
 
 
 //=====global value=====
 extern int token_pointer;
-extern token_t *treePointer;
+extern Token_t *treePointer;
 extern int f_null_flag;
 extern int defun_flag;
 
 //=====function=======
 char *skip_space(char *);
-token_t *tokenize(char *);
-void push_token(token_t *, token_t *);
-token_t parse_begin(char *);
-token_t parse_end(char *);
-token_t parse_operater(char *);
-token_t parse_number(char *);
-token_t parse_symbol(char *);
-cons_t *parse(token_t *);
-int VirtualMachine_DirectThreadedCode_Run(bytecode_t *,int*);
+Token_t *tokenize(char *);
+void push_token(Token_t *, Token_t *);
+Token_t parse_begin(char *);
+Token_t parse_end(char *);
+Token_t parse_operater(char *);
+Token_t parse_number(char *);
+Token_t parse_symbol(char *);
+ConsCell_t *parse(Token_t *);
+int VirtualMachine_DirectThreadedCode_Run(ByteCode_t *,int*);
 int main(int, char **);
 void readline_main(void);
 void file_main(char **);
 int hash(char*);
-void make_hashtable_null(f_table **);
-void hash_put(char *,func_t *);
-func_t *search_func_hash(char *);
-void generatecoder(cons_t *, func_t *, int);
+void make_hashtable_null(FuncTable_t **);
+void hash_put(char *,VM_Instruction_Set *);
+VM_Instruction_Set *search_func_hash(char *);
+void generatecoder(ConsCell_t *, VM_Instruction_Set *, int);
 #endif 

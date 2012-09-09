@@ -2,12 +2,12 @@
 
 int defun_flag;
 
-void generatecoder(cons_t *treehead, func_t *func, int r)
+void generatecoder(ConsCell_t *treehead, VM_Instruction_Set *func, int r)
 {
-	cons_t *eval_pointer;
+	ConsCell_t *eval_pointer;
 	int if_index;
 	int jump_index;
-	cons_t *arg_ptr;
+	ConsCell_t *arg_ptr;
 
 	switch(treehead->type){
 	case T_BEGIN:
@@ -35,13 +35,13 @@ void generatecoder(cons_t *treehead, func_t *func, int r)
 		}else if(strncmp(treehead->svalue, "defun", sizeof("defun")+1) == 0) {
 			defun_flag = ON;
 			int counter = 0;
-			cons_t *arg = treehead->cdr->cdr->car;
+			ConsCell_t *arg = treehead->cdr->cdr->car;
 			while(arg != NULL) {
 				counter++;
 				arg = arg->cdr;
 			}
-			func_t *newfunc;
-			newfunc = (func_t *)malloc(sizeof(func_t));
+			VM_Instruction_Set *newfunc;
+			newfunc = (VM_Instruction_Set *)malloc(sizeof(VM_Instruction_Set));
 			hash_put(treehead->cdr->svalue, newfunc);
 			newfunc->index = 0;
 			newfunc->cons = treehead;
@@ -49,7 +49,7 @@ void generatecoder(cons_t *treehead, func_t *func, int r)
 			newfunc->code[newfunc->index].op = RET;
 			newfunc->code[newfunc->index].reg0 = counter;
 		}else{
-			func_t *s_func;
+			VM_Instruction_Set *s_func;
 			int counter = 0;
 			s_func = search_func_hash(treehead->svalue);
 			while(treehead->cdr != NULL){

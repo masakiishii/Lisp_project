@@ -2,9 +2,9 @@
 
 #define OP_NEXT *VM_Instruction_Table[opcode->op]
 
-int VirtualMachine_DirectThreadedCode_Run(bytecode_t *op, int *sp)
+int VirtualMachine_DirectThreadedCode_Run(ByteCode_t *op, int *sp)
 {
-	register bytecode_t *opcode = op;
+	register ByteCode_t *opcode = op;
 	register int *Reg = sp;
 
 	static const void *VM_Instruction_Table[] = {

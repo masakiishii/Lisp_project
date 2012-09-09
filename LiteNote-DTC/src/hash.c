@@ -2,24 +2,24 @@
 
 int f_null_flag = 0;
 
-f_table *functable[HASH_BACKET];
+FuncTable_t *functable[HASH_BACKET];
 
 int hash(char *c)
 {
 	return (c[0] % HASH_BACKET);
 }
 
-void make_hashtable_null(f_table **h_val)
+void make_hashtable_null(FuncTable_t **h_val)
 {
 	int i;
 	for(i = 0;i < HASH_BACKET; i++)
 		h_val[i] = NULL;
 }
 
-void hash_put(char *key, func_t *value)
+void hash_put(char *key, VM_Instruction_Set *value)
 {
 	int bucket;
-	f_table *oldheader;
+	FuncTable_t *oldheader;
 
 	if(f_null_flag == 0) {
 		make_hashtable_null(functable);
@@ -29,16 +29,16 @@ void hash_put(char *key, func_t *value)
 	bucket = hash(key);
 
 	oldheader = functable[bucket];
-	functable[bucket] = (f_table *)malloc(sizeof(f_table));
+	functable[bucket] = (FuncTable_t *)malloc(sizeof(FuncTable_t));
 
 	functable[bucket]->fn_t = value;
 	functable[bucket]->key = key;
 	functable[bucket]->next = oldheader;
 }
 
-func_t *search_func_hash(char *key)
+VM_Instruction_Set *search_func_hash(char *key)
 {
-	f_table *p;
+	FuncTable_t *p;
 	char *str = key;
 
 	p = functable[hash(str)];

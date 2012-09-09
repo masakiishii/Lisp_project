@@ -15,9 +15,9 @@ int main(int argc, char **argv)
 
 void readline_main(void)
 {
-	token_t *tokenized_buf;
-	cons_t *tree_head;
-	func_t *func;
+	Token_t *tokenized_buf;
+	ConsCell_t *tree_head;
+	VM_Instruction_Set *func;
 	char *input;
 	int reg[256];
 	
@@ -31,7 +31,7 @@ void readline_main(void)
 		tokenized_buf = tokenize(input);
 		treePointer = tokenized_buf;
 		tree_head = parse(tokenized_buf);
-		func = (func_t *)malloc(sizeof(func_t));
+		func = (VM_Instruction_Set *)malloc(sizeof(VM_Instruction_Set));
 		func->index = 0;
 		func->cons = tree_head;
 		generatecoder(tree_head, func, 0);
@@ -47,9 +47,9 @@ void readline_main(void)
 
 void file_main(char **argv)
 {
-	token_t *tokenized_buf;
-	cons_t *tree_head;
-	func_t *func;
+	Token_t *tokenized_buf;
+	ConsCell_t *tree_head;
+	VM_Instruction_Set *func;
 	char input[1024];
 	FILE *fp = NULL;
 
@@ -59,21 +59,21 @@ void file_main(char **argv)
 		printf("file not open.");
 	}else{
 		int reg[256];
-		//func_t *funclist[256];
+		//VM_Instruction_Set *funclist[256];
 		//size_t funcnum = 0;
 		while(fgets(input, 1024, fp) != NULL) {
 			printf("%s\n", input);
 			tokenized_buf = tokenize(input);
 			treePointer = tokenized_buf;
 			tree_head = parse(tokenized_buf);
-			func = (func_t *)malloc(sizeof(func_t));
+			func = (VM_Instruction_Set *)malloc(sizeof(VM_Instruction_Set));
 			func->index = 0;
 			func->cons = tree_head;
 			generatecoder(tree_head, func, 0);
 			func->code[func->index].op = RET;
 			func->code[func->index].reg0 = 0;
 			if(defun_flag == OFF) {
-				fprintf(stderr, "hoge%d\n", VirtualMachine_DirectThreadedCode_Run(func->code, reg));
+				fprintf(stderr, "%d\n", VirtualMachine_DirectThreadedCode_Run(func->code, reg));
 			}
 			defun_flag = OFF;
 		}

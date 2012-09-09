@@ -16,10 +16,10 @@ char *skip_space(char *buf)
 	}
 	return buf;
 }
-token_t *tokenize(char *buf)
+Token_t *tokenize(char *buf)
 {
-	token_t *tokens = (token_t *)malloc(sizeof(token_t) * TOKENSIZE);
-	token_t *head = tokens;
+	Token_t *tokens = (Token_t *)malloc(sizeof(Token_t) * TOKENSIZE);
+	Token_t *head = tokens;
 
 	while (*buf != '\n') {
 		buf = skip_space(buf);
@@ -83,26 +83,26 @@ number:     *tokens = parse_number(buf);
 }
 
 
-token_t parse_begin(char *buf)
+Token_t parse_begin(char *buf)
 {
-	token_t parse_bgn;
+	Token_t parse_bgn;
 	parse_bgn.type = T_BEGIN;
 	parse_bgn.str = strndup(buf, 1);
 	return parse_bgn;
 }
 
 
-token_t parse_end(char *buf)
+Token_t parse_end(char *buf)
 {
-	token_t parse_ed;
+	Token_t parse_ed;
 	parse_ed.type = T_END;
 	parse_ed.str = strndup(buf, 1);
 	return parse_ed;
 }
 
-token_t parse_operater(char *buf)
+Token_t parse_operater(char *buf)
 {
-	token_t parse_op;
+	Token_t parse_op;
 	parse_op.type = T_OPERATOR;
 	if(*(buf+1) == '='){
 		parse_op.str = strndup(buf, 2);
@@ -113,10 +113,10 @@ token_t parse_operater(char *buf)
 }
 
 
-token_t parse_number(char *buf)
+Token_t parse_number(char *buf)
 {
 	char *buf_current = buf;
-	token_t parse_num;
+	Token_t parse_num;
 
 	while(isalnum(*buf_current)){
 		buf_current++;
@@ -126,10 +126,10 @@ token_t parse_number(char *buf)
 	return parse_num;
 }
 
-token_t parse_symbol(char *buf)
+Token_t parse_symbol(char *buf)
 {
 	char *buf_current = buf;
-	token_t parse_num;
+	Token_t parse_num;
 
 	while(isalpha(*buf_current)){
 		buf_current++;

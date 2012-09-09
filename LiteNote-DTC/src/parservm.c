@@ -1,8 +1,8 @@
 #include "ilispvm.h"
 
-token_t *treePointer = NULL;
+Token_t *treePointer = NULL;
 
-cons_t *parse(token_t *t)
+ConsCell_t *parse(Token_t *t)
 {
 
 	if(t->type == T_END) {
@@ -10,7 +10,7 @@ cons_t *parse(token_t *t)
 		return NULL;
 	}
 
-	cons_t *treehead = (cons_t *)malloc(sizeof(cons_t));
+	ConsCell_t *treehead = (ConsCell_t *)malloc(sizeof(ConsCell_t));
 
 	switch(t->type) {
 
