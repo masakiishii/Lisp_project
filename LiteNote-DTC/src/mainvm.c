@@ -66,7 +66,11 @@ void file_main(char **argv)
 			tokenized_buf = tokenize(input);
 			treePointer = tokenized_buf;
 			tree_head = parse(tokenized_buf);
+
+#ifdef DEBUG_MODE
+			DBG_P("=====<<<Tree_Dump>>>=====");
 			Tree_Dump(tree_head, 0);
+#endif
 			func = (VM_Instruction_Set *)malloc(sizeof(VM_Instruction_Set));
 			func->index = 0;
 			func->cons = tree_head;

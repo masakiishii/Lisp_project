@@ -115,7 +115,7 @@ cons_t *parse(char **t)
 						head->cdr = parse(tree_pointer);
 					}
 				
-				}else if((defun_flag == DEFUN_ON) && (**(t-1) != '(')) {
+				}else if((defun_flag == DEFUN_ON) && (**(t-1) != '(') ) {
 					head->type = T_ARGUMENT;
 					head->svalue = *t;
 					tree_pointer++;

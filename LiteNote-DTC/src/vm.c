@@ -64,7 +64,7 @@ int VirtualMachine_DirectThreadedCode_Run(ByteCode_t *op, int *sp)
 	register int *Reg = sp;
 
 	static const void *VM_Instruction_Table[] = {
-		&&OPLOAD, &&OPADD, &&OPSUB, &&OPMUL, &&OPDEV,
+		&&OPLOAD, &&OPADD, &&OPSUB, &&OPMUL, &&OPDIV,
 		&&OPLT, &&OPLEQ, &&OPGT,
 		&&OPGEQ, &&OPIF, &&OPJMP, &&OPDEFUN, &&OPMOV, &&OPCALL, &&OPRET
 	};
@@ -95,7 +95,7 @@ OPMUL:
 	opcode++;
 	goto OP_NEXT;
 
-OPDEV:
+OPDIV:
 	Code_Dump(opcode);
 	Reg[opcode->reg0] = Reg[opcode->reg1] / Reg[opcode->reg2];
 	opcode++;

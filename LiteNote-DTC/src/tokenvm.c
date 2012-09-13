@@ -2,7 +2,6 @@
 
 char **tokenize(char *line)
 {
-	DBG_P("=====<<<tokenize>>>=====");
 	char *current_ptr = line;
 	char *previous_ptr = line;
 	char **token = (char **)malloc(sizeof(char *) * TOKENSIZE);
@@ -52,7 +51,7 @@ char **tokenize(char *line)
 		}
 	}
 	token[i] = NULL;
-	Dump_Token(token);
+//	Dump_Token(token);
 
 	return token;
 }

@@ -4,7 +4,6 @@ int defun_flag;
 
 void generatecoder(ConsCell_t *treehead, VM_Instruction_Set *func, int r)
 {
-	DBG_P("=====<<<generatecoder>>>=====");
 	ConsCell_t *eval_pointer;
 	int if_index;
 	int jump_index;
@@ -19,7 +18,7 @@ void generatecoder(ConsCell_t *treehead, VM_Instruction_Set *func, int r)
 			generatecoder(treehead, func, r);
 			break;
 		}
-		if(strncmp(treehead->svalue, "if", sizeof("if")) == 0) {
+	case T_IF :
 			DBG_P("=====<<<if>>>=====");
 			generatecoder(eval_pointer, func, r);
 			func->code[func->index].op = OPIF;
@@ -35,7 +34,8 @@ void generatecoder(ConsCell_t *treehead, VM_Instruction_Set *func, int r)
 		   	generatecoder(eval_pointer->cdr->cdr, func, r);
 			func->code[jump_index].pc2 = &func->code[func->index];
 			break;
-		}else if(strncmp(treehead->svalue, "defun", sizeof("defun")) == 0) {
+
+	case T_DEFUN :
 			DBG_P("=====<<<defun>>>=====");
 			defun_flag = ON;
 			int counter = 0;
@@ -76,11 +76,11 @@ void generatecoder(ConsCell_t *treehead, VM_Instruction_Set *func, int r)
 		func->index++;
 		break;
 
-	case T_OPERATOR:
-		DBG_P("=====<<<T_OPERATOR>>>=====");
-		eval_pointer = treehead->cdr;
-		if(strncmp(treehead->svalue, "+", sizeof("+")+1) == 0) {
+//	case T_OPERATOR:
+//		DBG_P("=====<<<T_OPERATOR>>>=====");
+	case T_ADD ;
 			DBG_P("=====<<<OPADD>>>=====");
+		eval_pointer = treehead->cdr;
 			generatecoder(eval_pointer, func, r);
 			while((eval_pointer->cdr->celltype != T_END)){
 				generatecoder(eval_pointer->cdr, func, r+1);
@@ -92,8 +92,10 @@ void generatecoder(ConsCell_t *treehead, VM_Instruction_Set *func, int r)
 				eval_pointer = eval_pointer->cdr;
 			}
 			break;
-		}else if(strncmp(treehead->svalue, "-", sizeof("-")) == 0) {
+
+   case T_SUB ;
 			DBG_P("=====<<<OPSUB>>>=====");
+		eval_pointer = treehead->cdr;
 			generatecoder(eval_pointer, func, r);
 			while((eval_pointer->cdr->celltype != T_END)){
 				generatecoder(eval_pointer->cdr, func, r+1);
@@ -105,8 +107,10 @@ void generatecoder(ConsCell_t *treehead, VM_Instruction_Set *func, int r)
 				eval_pointer = eval_pointer->cdr;
 			}
 			break;
-		}else if(strncmp(treehead->svalue, "*", sizeof("*")) == 0) {
+
+	case T_MUL ;
 			DBG_P("=====<<<OPMUL>>>=====");
+		eval_pointer = treehead->cdr;
 			generatecoder(eval_pointer, func, r);
 			while((eval_pointer->cdr->celltype != T_END)){
 				generatecoder(eval_pointer->cdr, func, r+1);
@@ -118,8 +122,10 @@ void generatecoder(ConsCell_t *treehead, VM_Instruction_Set *func, int r)
 				eval_pointer = eval_pointer->cdr;
 			}
 			break;
-		}else if(strncmp(treehead->svalue, "/", sizeof("/")) == 0) {
+
+	case T_DIV ;
 			DBG_P("=====<<<OPDEV>>>=====");
+		eval_pointer = treehead->cdr;
 			generatecoder(eval_pointer, func, r);
 			while((eval_pointer->cdr->celltype != T_END)){
 				generatecoder(eval_pointer->cdr, func, r+1);
@@ -131,8 +137,9 @@ void generatecoder(ConsCell_t *treehead, VM_Instruction_Set *func, int r)
 				eval_pointer = eval_pointer->cdr;
 			}
 			break;
-		}else if(strncmp(treehead->svalue, "<", sizeof("<")) == 0) {
+	case T_LT ;
 			DBG_P("=====<<<OPLT>>>=====");
+		eval_pointer = treehead->cdr;
 			generatecoder(eval_pointer, func, r);
 			generatecoder(eval_pointer->cdr, func, r+1);
 			func->code[func->index].op = OPLT;
@@ -141,18 +148,9 @@ void generatecoder(ConsCell_t *treehead, VM_Instruction_Set *func, int r)
 			func->code[func->index].reg2 = r+1;
 			func->index++;
 			break;
-		}else if(strncmp(treehead->svalue, "<=", sizeof("<=")) == 0) {
-			DBG_P("=====<<<OPLEQ>>>=====");
-			generatecoder(eval_pointer, func, r);
-			generatecoder(eval_pointer->cdr, func, r+1);
-			func->code[func->index].op = OPLEQ;
-			func->code[func->index].reg0 = r;
-			func->code[func->index].reg1 = r;
-			func->code[func->index].reg2 = r+1;
-			func->index++;
-			break;
-		}else if(strncmp(treehead->svalue, ">", sizeof(">")) == 0) {
+	case T_GT ;
 			DBG_P("=====<<<OPGT>>>=====");
+		eval_pointer = treehead->cdr;
 			generatecoder(eval_pointer, func, r);
 			generatecoder(eval_pointer->cdr, func, r+1);
 			func->code[func->index].op = OPGT;
@@ -161,17 +159,6 @@ void generatecoder(ConsCell_t *treehead, VM_Instruction_Set *func, int r)
 			func->code[func->index].reg2 = r+1;
 			func->index++;
 			break;
-		}else if(strncmp(treehead->svalue, ">=", sizeof(">=")) == 0) {
-			DBG_P("=====<<<OPGEQ>>>=====");
-			generatecoder(eval_pointer, func, r);
-			generatecoder(eval_pointer->cdr, func, r+1);
-			func->code[func->index].op = OPGEQ;
-			func->code[func->index].reg0 = r;
-			func->code[func->index].reg1 = r;
-			func->code[func->index].reg2 = r+1;
-			func->index++;
-			break;
-		}
 
 	case T_STRING:{
 		DBG_P("=====<<<OPMOV>>>=====");

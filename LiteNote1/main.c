@@ -80,7 +80,7 @@ void file_main(char **argv)
 				defun_pointer = tree_head->car->cdr;
 				defun_eval(defun_pointer->cdr->car, defun_pointer->cdr->cdr);
 				arg_numbering(defun_pointer->cdr->car);
-//				print_tree(tree_head, 0);
+				print_tree(tree_head, 0);
 				hash_func(defun_pointer);
 			}else{
 				answer_tree = eval_tree(tree_head);

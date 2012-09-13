@@ -30,8 +30,18 @@
 typedef enum CellType {
 	T_BEGIN,
 	T_END,
-	T_OPERATOR,
 	T_NUMBER,
+	T_ADD,
+	T_SUB,
+	T_MUL,
+	T_DIV,
+	T_LT,
+	T_GT,
+	T_IF,
+	T_SETQ,
+	T_DEFUN,
+	T_FUNC,
+	T_ARGUMENT,
 	T_STRING
 } CellType;
 
