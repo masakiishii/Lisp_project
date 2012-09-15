@@ -1,8 +1,20 @@
 #include "ilisp.h"
 
-#define OP_NEXT *VM_Instruction_Table[opcode->op]
+VirtualMachine *new_VirtualMachine(void)
+{
+	VirtualMachine *vm = (VirtualMachine *)imalloc(sizeof(VirtualMachine));
+	vm->DirectThreadedCode_Run = VirtualMachine_DirectThreadedCode_Run;
+	vm->delete = VirtualMachine_delete;
+	return vm;
+}
 
-void VirtualMachine_ByteCode_Dump(ByteCode_t *vmcode)
+void VirtualMachine_delete(VirtualMachine *vm)
+{
+	free(vm);
+	vm = NULL;
+}
+
+void VirtualMachine_ByteCode_Dump(ByteCode *vmcode)
 {
 	DBG_P("=====<<<VirtualMachine_ByteCode_Dump>>>=====");
 	switch(vmcode->op) {
@@ -45,19 +57,20 @@ void VirtualMachine_ByteCode_Dump(ByteCode_t *vmcode)
 	}
 }
 
+#define OP_NEXT *VM_Instruction_Table[opcode->op]
 #define Code_Dump(C)  VirtualMachine_ByteCode_Dump(C)
 
-int VirtualMachine_DirectThreadedCode_Run(ByteCode_t *op, int *sp)
+int VirtualMachine_DirectThreadedCode_Run(ByteCode *op, int *sp)
 {
 	DBG_P("=====<<<VirtualMachine_DirectThreadedCode_Run>>>=====");
 
-	register ByteCode_t *opcode = op;
+	register ByteCode *opcode = op;
 	register int *Reg = sp;
 
 	static const void *VM_Instruction_Table[] = {
 		&&OPLOAD, &&OPADD, &&OPSUB, &&OPMUL, &&OPDIV,
-		&&OPLT,  &&OPGT,
-		&&OPIF, &&OPJMP, &&OPMOV, &&OPCALL, &&OPRET
+		&&OPLT,  &&OPGT, &&OPIF, &&OPJMP, &&OPMOV, 
+		&&OPCALL, &&OPRET
 	};
 
 	goto OP_NEXT;
@@ -106,11 +119,7 @@ OPGT:
 
 OPIF:
 	Code_Dump(opcode);
-	if(Reg[opcode->reg0] == 0) {
-		opcode = opcode->pc2;
-	}else{
-		opcode++;
-	}
+	(Reg[opcode->reg0] == 0) ? (opcode = opcode->pc2) : (opcode++);
 	goto OP_NEXT;
 
 OPJMP:

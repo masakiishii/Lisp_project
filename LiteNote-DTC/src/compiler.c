@@ -2,20 +2,34 @@
 
 int defun_flag;
 
-void Compiler(ConsCell_t *treehead, VM_ByteCode_Set *func, int r)
+Compiler *new_Compiler(void)
 {
-	ConsCell_t *eval_pointer = NULL;
+	Compiler *c = (Compiler *)imalloc(sizeof(Compiler));
+	c->compiler = Compiler_compile;
+	c->delete = Compiler_delete;
+	return c;
+}
+
+void Compiler_delete(Compiler *c)
+{
+	free(c);
+	c = NULL;
+}
+
+void Compiler_compile(ConsCell *root, VirtualMachineByteCodeLine *func, int r)
+{
+	ConsCell *eval_pointer = NULL;
 	int if_index;
 	int jump_index;
-	ConsCell_t *arg_ptr;
+	ConsCell *arg_ptr;
 
-	switch(treehead->celltype){
+	switch(root->celltype){
 	case T_BEGIN:
 		DBG_P("=====<<<T_BEGIN>>>=====");
-		treehead = treehead->car;
-		eval_pointer = treehead->cdr;
-//		if(treehead->celltype == T_OPERATOR){
-			Compiler(treehead, func, r);
+		root = root->car;
+		eval_pointer = root->cdr;
+//		if(root->celltype == T_OPERATOR){
+			Compiler(root, func, r);
 //		}
 		break;
 
@@ -25,7 +39,7 @@ void Compiler(ConsCell_t *treehead, VM_ByteCode_Set *func, int r)
 
 	case T_ADD :
 		DBG_P("=====<<<OPADD>>>=====");
-		eval_pointer = treehead->cdr;
+		eval_pointer = root->cdr;
 		Compiler(eval_pointer, func, r);
 		while((eval_pointer->cdr->celltype != T_END)){
 			Compiler(eval_pointer->cdr, func, r+1);
@@ -40,7 +54,7 @@ void Compiler(ConsCell_t *treehead, VM_ByteCode_Set *func, int r)
 
 	case T_SUB :
 		DBG_P("=====<<<OPSUB>>>=====");
-		eval_pointer = treehead->cdr;
+		eval_pointer = root->cdr;
 		Compiler(eval_pointer, func, r);
 		while((eval_pointer->cdr->celltype != T_END)){
 			Compiler(eval_pointer->cdr, func, r+1);
@@ -55,7 +69,7 @@ void Compiler(ConsCell_t *treehead, VM_ByteCode_Set *func, int r)
 
 	case T_MUL :
 		DBG_P("=====<<<OPMUL>>>=====");
-		eval_pointer = treehead->cdr;
+		eval_pointer = root->cdr;
 		Compiler(eval_pointer, func, r);
 		while((eval_pointer->cdr->celltype != T_END)){
 			Compiler(eval_pointer->cdr, func, r+1);
@@ -70,7 +84,7 @@ void Compiler(ConsCell_t *treehead, VM_ByteCode_Set *func, int r)
 
 	case T_DIV :
 		DBG_P("=====<<<OPDIV>>>=====");
-		eval_pointer = treehead->cdr;
+		eval_pointer = root->cdr;
 		Compiler(eval_pointer, func, r);
 		while((eval_pointer->cdr->celltype != T_END)){
 			Compiler(eval_pointer->cdr, func, r+1);
@@ -84,7 +98,7 @@ void Compiler(ConsCell_t *treehead, VM_ByteCode_Set *func, int r)
 		break;
 	case T_LT :
 		DBG_P("=====<<<OPLT>>>=====");
-		eval_pointer = treehead->cdr;
+		eval_pointer = root->cdr;
 		Compiler(eval_pointer, func, r);
 		Compiler(eval_pointer->cdr, func, r+1);
 		func->code[func->index].op = OPLT;
@@ -95,7 +109,7 @@ void Compiler(ConsCell_t *treehead, VM_ByteCode_Set *func, int r)
 		break;
 	case T_GT :
 		DBG_P("=====<<<OPGT>>>=====");
-		eval_pointer = treehead->cdr;
+		eval_pointer = root->cdr;
 		Compiler(eval_pointer, func, r);
 		Compiler(eval_pointer->cdr, func, r+1);
 		func->code[func->index].op = OPGT;
@@ -107,7 +121,7 @@ void Compiler(ConsCell_t *treehead, VM_ByteCode_Set *func, int r)
 
 	case T_IF :
 		DBG_P("=====<<<T_IF>>>=====");
-		eval_pointer = treehead->cdr;
+		eval_pointer = root->cdr;
 		Compiler(eval_pointer, func, r);
 		func->code[func->index].op = OPIF;
 		func->code[func->index].reg0 = r;
@@ -125,30 +139,30 @@ void Compiler(ConsCell_t *treehead, VM_ByteCode_Set *func, int r)
 
 	case T_DEFUN :
 		DBG_P("=====<<<defun>>>=====");
-		eval_pointer = treehead->cdr;
+		eval_pointer = root->cdr;
 		int counter = 0;
-		ConsCell_t *arg = treehead->cdr->cdr->car;
+		ConsCell *arg = root->cdr->cdr->car;
 		while(arg->celltype != T_END) {
 			counter++;
 			arg = arg->cdr;
 		}
-		VM_ByteCode_Set *newfunc;
-		newfunc = (VM_ByteCode_Set *)malloc(sizeof(VM_ByteCode_Set));
-		hash_put(treehead->cdr->svalue, newfunc);
+		VirtualMachineByteCodeLine *newfunc;
+		newfunc = (VirtualMachineByteCodeLine *)malloc(sizeof(VirtualMachineByteCodeLine));
+		hash_put(root->cdr->svalue, newfunc);
 		newfunc->index = 0;
-		newfunc->cons = treehead;
+		newfunc->cons = root;
 		Compiler(eval_pointer->cdr->cdr, newfunc, counter);
 		newfunc->code[newfunc->index].op = OPRET;
 		newfunc->code[newfunc->index].reg0 = counter;
 		break;
 
 	case T_FUNC:{
-		VM_ByteCode_Set *s_func;
+		VirtualMachineByteCodeLine *s_func;
 		int counter = 0;
-		s_func = search_func_hash(treehead->svalue);
-		while(treehead->cdr != NULL){
-			Compiler(treehead->cdr, func, r + counter);
-			treehead = treehead->cdr;
+		s_func = search_func_hash(root->svalue);
+		while(root->cdr != NULL){
+			Compiler(root->cdr, func, r + counter);
+			root = root->cdr;
 			counter++;
 		}
 		func->code[func->index].op = OPCALL;
@@ -161,7 +175,7 @@ void Compiler(ConsCell_t *treehead, VM_ByteCode_Set *func, int r)
 		DBG_P("=====<<<T_NUMBER>>>=====");
 		func->code[func->index].op = OPLOAD;
 		func->code[func->index].reg0 = r;
-		func->code[func->index].data1 = treehead->ivalue;
+		func->code[func->index].data1 = root->ivalue;
 		func->index++;
 		break;
 
@@ -171,7 +185,7 @@ void Compiler(ConsCell_t *treehead, VM_ByteCode_Set *func, int r)
 		int counter = 0;
 		arg_ptr = func->cons->cdr->cdr->car;
 		while(arg_ptr->celltype != T_END) {
-			if(strcmp(arg_ptr->svalue, treehead->svalue) == 0) {
+			if(strcmp(arg_ptr->svalue, root->svalue) == 0) {
 				func->code[func->index].op = OPMOV;
 				func->code[func->index].reg0 = r;
 				func->code[func->index].reg1 = counter;

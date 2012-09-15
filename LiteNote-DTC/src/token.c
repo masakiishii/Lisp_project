@@ -1,6 +1,6 @@
 #include "ilisp.h"
 
-char **tokenize(char *line)
+char **Tokenizer_spliter(char *line)
 {
 	char *current_ptr = line;
 	char *previous_ptr = line;
@@ -56,12 +56,28 @@ char **tokenize(char *line)
 	return token;
 }
 
-void Dump_Token(char **token)
+
+
+void Tokenizer_dump(char **token)
 {
 	int i = 0;
 	while(token[i] != NULL) {
 		DBG_P("<<Token>> = %s\n", token[i]);
 		i++;
 	}
+}
+
+Tokenizer *new_Tokenizer(void)
+{
+	Tokenizer *t = (Tokenizer *)imalloc(sizeof(Tokenizer));
+	t->spliter = Tokenizer_spliter;
+	t->delete = Tokenizer_delete;
+	t->dump = Tokenizer_dump;
+	return t;
+}
+
+void Tokenizer_delete(char **token)
+{
+
 }
 

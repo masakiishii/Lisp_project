@@ -1,13 +1,17 @@
 #ifndef LISP_H
 #define LISP_H
-
 #include <stdio.h>
 #include <readline/readline.h>
 #include <readline/history.h>
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
-		/* fprintf(stderr, "[%s:%d] ", __FILE__, __LINE__);		\ */
+#define HASH_BACKET 64
+#define TOKENSIZE 1024
+#define ON 1
+#define OFF 0
+
+/* fprintf(stderr, "[%s:%d] ", __FILE__, __LINE__);		\ */
 //=======<<<DEBUG MODE>>>=======
 #ifdef DEBUG_MODE
 #define DBG_P(fmt, ...) {\
@@ -19,13 +23,6 @@
 	}
 #endif
 //==============================
-
-#define HASH_BACKET 64
-#define TOKENSIZE 1024
-#define ON 1
-#define OFF 0
-
-
 
 typedef enum CellType {
 	T_BEGIN,
@@ -45,7 +42,7 @@ typedef enum CellType {
 	T_STRING
 } CellType;
 
-enum OpCode {
+typedef enum OpCode {
 	OPLOAD,
 	OPADD,
 	OPSUB,
@@ -58,25 +55,26 @@ enum OpCode {
 	OPMOV,
 	OPCALL,
 	OPRET
-};
+} OpCode;
 
-typedef struct Token_t {
+
+typedef struct _Token {
 	CellType type;
 	char *str;
-} Token_t;
+} Token;
 
-typedef struct ConsCell_t {
+typedef struct _ConsCell {
 	CellType celltype;
 	union {
-		struct ConsCell_t *car;
+		struct _ConsCell *car;
 		int ivalue;
 		char *svalue;
 	};
-	struct ConsCell_t *cdr;
-} ConsCell_t;
+	struct _ConsCell *cdr;
+} ConsCell;
 
-typedef struct ByteCode_t {
-	enum OpCode op;
+typedef struct _ByteCode {
+	OpCode op;
 	int reg0;
 	union {
 		int reg1;
@@ -85,24 +83,47 @@ typedef struct ByteCode_t {
 	union {
 		int reg2;
 		int data2;
-		struct ByteCode_t *pc2;
+		struct _ByteCode *pc2;
 	};
-} ByteCode_t;
+} ByteCode;
 
-typedef struct VM_ByteCode_Set {
-	ByteCode_t code[256];
+typedef struct _VirtualMachineByteCodeLine {
+	ByteCode code[256];
 	int index;
-	ConsCell_t *cons;
-} VM_ByteCode_Set;
+	ConsCell *cons;
+} VirtualMachineByteCodeLine;
 
-typedef struct FuncTable_t {
-	VM_ByteCode_Set *fn_t;
+typedef struct _FuncTable {
+	VirtualMachineByteCodeLine *fn_t;
 	char *key;
-	struct FuncTable_t *next;
-} FuncTable_t;
+	struct FuncTable *next;
+} FuncTable;
+
+typedef struct _Tokenizer {
+	char **(*spliter)(char *line);
+	void (*delete)(char **token);
+	void (*dump)(char **token);
+} Tokenizer;
+
+typedef struct _Parser {
+	ConsCell *(*parser)(char **token);
+	void (*delete)(ConsCell *root);
+	void (*dump)(ConsCell *root);
+} Parser;
+
+typedef struct _Compiler {
+	void (*compiler)(ConsCell *root, VirtualMachineByteCodeLine *func, int r);
+	void (*delete)(struct _Compiler *c);
+} Compiler;
+
+typedef struct _VirtualMachine {
+	int (*DirectThreadedCode_Run)(ByteCode *bytecode, int *op);
+	void (*delete)(struct _VirtualMachine *vm);
+	void (*dump)(ByteCode *bytecode);
+} VirtualMachine;
 
 
-//=====<<<Global Value>>>=====
+//=====================<<<Global Value>>>===========================
 extern int token_pointer;
 extern char **treePointer;
 extern int f_null_flag;
@@ -110,22 +131,41 @@ extern int setq_flag;
 extern int defun_flag;
 extern int defun_call;
 
+//=====================<<<Function>>================================
+int main(int argc, char **argv);
+void ilisp_shell(void);
+void ilisp_script(char **input);
+void ilisp_main(Tokenizer *t, Parser *p, char *line);
 
-//=====<<<Function>>=======
-char **tokenize(char *);
-void Dump_Token(char **);
-ConsCell_t *new_ConsCell(void);
-ConsCell_t *parse(char **);
-void Tree_Dump(ConsCell_t *, int);
-int VirtualMachine_DirectThreadedCode_Run(ByteCode_t *,int*);
-void VirtualMachine_ByteCode_Dump(ByteCode_t *);
-int main(int, char **);
-void readline_main(void);
-void file_main(char **);
-int hash(char*);
-void make_hashtable_null(FuncTable_t **);
-void hash_put(char *,VM_ByteCode_Set *);
-VM_ByteCode_Set *search_func_hash(char *);
-void Compiler(ConsCell_t *, VM_ByteCode_Set *, int);
+void *imalloc(size_t size);
+
+Tokenizer *new_Tokenizer(void);
+char **Tokenizer_spliter(char *line);
+void Tokenizer_delete(Tokenizer *t);
+void Tokenizer_dump(char **token);
+
+
+ConsCell *new_ConsCell(void);
+Parser *new_Parser(void);
+void Parser_delete(Parser *p);
+ConsCell *Parser_parser(char **token);
+void Parser_Dump(ConsCell *root, int head);
+
+
+Compiler *new_Compiler(void);
+void Compiler_delete(Compiler *c);
+void Compiler_compile(ConsCell *root, VirtualMachineByteCodeLine *func, int r);
+
+
+VirtualMachine *new_VirtualMachine(void);
+int VirtualMachine_DirectThreadedCode_Run(ByteCode *op, int *sp);
+void VirtualMachine_ByteCode_Dump(ByteCode *vmcode);
+void VirtualMachine_delete(VirtualMachine *vm);
+
+int hash(char *c);
+void make_hashtable_null(FuncTable **h_val);
+void hash_put(char *key,VirtualMachineByteCodeLine *value);
+VirtualMachineByteCodeLine *search_func_hash(char *key);
+
 
 #endif 

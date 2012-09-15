@@ -5,6 +5,8 @@ CFLAGS=-O2 -W -Wall -I./include/
 #CFLAGS=-g3 -O0 -DDEBUG_MODE=1 -W -Wall -I./include/
 OBJS=\
 	build/main.o \
+	build/ilisp.o \
+    build/malloc.o \
     build/token.o \
     build/parser.o \
 	build/compiler.o \
@@ -19,6 +21,12 @@ $(TARGET): $(OBJS)
 	$(CC) $(CFLAGS) -o $(TARGET) $^ $(LDLIBS)
 
 build/main.o: src/main.c # include/ilisp.h
+	$(CC) $(CFLAGS) -o $@ -c $^
+
+build/ilisp.o: src/ilisp.c # include/ilisp.h
+	$(CC) $(CFLAGS) -o $@ -c $^
+
+build/malloc.o: src/malloc.c # include/ilisp.h
 	$(CC) $(CFLAGS) -o $@ -c $^
 
 build/token.o: src/token.c # include/ilisp.h
