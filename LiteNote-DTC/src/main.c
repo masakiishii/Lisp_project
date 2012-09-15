@@ -1,4 +1,4 @@
-#include "ilispvm.h"
+#include "ilisp.h"
 
 int main(int argc, char **argv)
 {
@@ -17,7 +17,7 @@ void readline_main(void)
 {
 	char **tokenized_buf;
 	ConsCell_t *tree_head;
-	VM_Instruction_Set *func;
+	VM_ByteCode_Set *func;
 	char *input;
 	int reg[256];
 	
@@ -31,10 +31,10 @@ void readline_main(void)
 		tokenized_buf = tokenize(input);
 		treePointer = tokenized_buf;
 		tree_head = parse(tokenized_buf);
-		func = (VM_Instruction_Set *)malloc(sizeof(VM_Instruction_Set));
+		func = (VM_ByteCode_Set *)malloc(sizeof(VM_ByteCode_Set));
 		func->index = 0;
 		func->cons = tree_head;
-		generatecoder(tree_head, func, 0);
+		Compiler(tree_head, func, 0);
 		func->code[func->index].op = OPRET;
 		func->code[func->index].reg0 = 0;
 		if(defun_flag == OFF) {
@@ -49,7 +49,7 @@ void file_main(char **argv)
 {
 	char **tokenized_buf;
 	ConsCell_t *tree_head;
-	VM_Instruction_Set *func;
+	VM_ByteCode_Set *func;
 	char input[1024];
 	FILE *fp = NULL;
 
@@ -71,10 +71,10 @@ void file_main(char **argv)
 			DBG_P("=====<<<Tree_Dump>>>=====");
 			Tree_Dump(tree_head, 0);
 #endif
-			func = (VM_Instruction_Set *)malloc(sizeof(VM_Instruction_Set));
+			func = (VM_ByteCode_Set *)malloc(sizeof(VM_ByteCode_Set));
 			func->index = 0;
 			func->cons = tree_head;
-			generatecoder(tree_head, func, 0);
+			Compiler(tree_head, func, 0);
 			func->code[func->index].op = OPRET;
 			func->code[func->index].reg0 = 0;
 

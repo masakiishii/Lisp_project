@@ -1,4 +1,4 @@
-#include "ilispvm.h"
+#include "ilisp.h"
 
 char **tokenize(char *line)
 {

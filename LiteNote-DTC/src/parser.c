@@ -1,4 +1,4 @@
-#include "ilispvm.h"
+#include "ilisp.h"
 
 char **treePointer = NULL;
 int setq_flag = 0;
@@ -105,41 +105,35 @@ ConsCell_t *parse(char **token_array)
 				treePointer++;
 				head->cdr = parse(treePointer);
 			}else{
-			    if((strncmp(*(token_array-1), "defun", 6) == 0)) {
+				if(((**(token_array-1) == '(') && (defun_flag != ON)) || (strncmp(*(token_array-1), "defun", 6) == 0)) {
 					head->celltype = T_FUNC;				
 					head->svalue = *token_array;
+					defun_call = ON;
 					treePointer++;
 					head->cdr = parse(treePointer);
-				}else if((**(token_array-1) == '(')) {
-					if(defun_call == OFF) {
-						head->celltype = T_ARGUMENT;
-						head->svalue = *token_array;
-						treePointer++;
-						head->cdr = parse(treePointer);
-					}else{
-						head->celltype = T_FUNC;				
-						head->svalue = *token_array;
-						treePointer++;
-						head->cdr = parse(treePointer);
-					}
-				
-				}else if((defun_flag == ON) && (**(token_array-1) != '(') ) {
+				}else if(((**(token_array-1) == '(') && (defun_call == OFF)) || ((defun_flag == ON) && (**(token_array-1) != '('))) {
 					head->celltype = T_ARGUMENT;
 					head->svalue = *token_array;
 					treePointer++;
 					head->cdr = parse(treePointer);
 				}else{
-					head->celltype = T_STRING;				
-					head->svalue = *token_array;
-					treePointer++;
-					head->cdr = parse(treePointer);
+					if(defun_flag == ON) {
+						head->celltype = T_FUNC;				
+						head->svalue = *token_array;
+						treePointer++;
+						head->cdr = parse(treePointer);
+					}else{
+						head->celltype = T_STRING;
+						head->svalue = *token_array;
+						treePointer++;
+						head->cdr = parse(treePointer);
+					}
 				}
 			}
 		}
 		break;
 	}
 	return head;
-
 }
 
 void Tree_Dump(ConsCell_t *head, int level)
@@ -257,7 +251,7 @@ void Tree_Dump(ConsCell_t *head, int level)
 			Tree_Dump(head->cdr, level+1);
 			for(i=0;i<level;i++)
 				fprintf(stderr,"  ");
-			fprintf(stderr,"A:%d\n", head->ivalue);
+			fprintf(stderr,"A:%s\n", head->svalue);
 			break;
 		}
 	}

@@ -50,14 +50,11 @@ enum OpCode {
 	OPADD,
 	OPSUB,
 	OPMUL,
-	OPDEV,
+	OPDIV,
 	OPLT,
-	OPLEQ,
 	OPGT,
-	OPGEQ,
 	OPIF,
 	OPJMP,
-	OPDEFUN,
 	OPMOV,
 	OPCALL,
 	OPRET
@@ -92,14 +89,14 @@ typedef struct ByteCode_t {
 	};
 } ByteCode_t;
 
-typedef struct VM_Instruction_Set {
+typedef struct VM_ByteCode_Set {
 	ByteCode_t code[256];
 	int index;
 	ConsCell_t *cons;
-} VM_Instruction_Set;
+} VM_ByteCode_Set;
 
 typedef struct FuncTable_t {
-	VM_Instruction_Set *fn_t;
+	VM_ByteCode_Set *fn_t;
 	char *key;
 	struct FuncTable_t *next;
 } FuncTable_t;
@@ -127,7 +124,8 @@ void readline_main(void);
 void file_main(char **);
 int hash(char*);
 void make_hashtable_null(FuncTable_t **);
-void hash_put(char *,VM_Instruction_Set *);
-VM_Instruction_Set *search_func_hash(char *);
-void generatecoder(ConsCell_t *, VM_Instruction_Set *, int);
+void hash_put(char *,VM_ByteCode_Set *);
+VM_ByteCode_Set *search_func_hash(char *);
+void Compiler(ConsCell_t *, VM_ByteCode_Set *, int);
+
 #endif 

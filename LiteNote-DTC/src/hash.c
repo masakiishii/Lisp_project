@@ -1,4 +1,4 @@
-#include "ilispvm.h"
+#include "ilisp.h"
 
 int f_null_flag = 0;
 
@@ -16,7 +16,7 @@ void make_hashtable_null(FuncTable_t **h_val)
 		h_val[i] = NULL;
 }
 
-void hash_put(char *key, VM_Instruction_Set *value)
+void hash_put(char *key, VM_ByteCode_Set *value)
 {
 	int bucket;
 	FuncTable_t *oldheader;
@@ -36,7 +36,7 @@ void hash_put(char *key, VM_Instruction_Set *value)
 	functable[bucket]->next = oldheader;
 }
 
-VM_Instruction_Set *search_func_hash(char *key)
+VM_ByteCode_Set *search_func_hash(char *key)
 {
 	FuncTable_t *p;
 	char *str = key;

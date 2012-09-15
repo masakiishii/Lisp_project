@@ -1,4 +1,4 @@
-#include "ilispvm.h"
+#include "ilisp.h"
 
 #define OP_NEXT *VM_Instruction_Table[opcode->op]
 
@@ -18,29 +18,20 @@ void VirtualMachine_ByteCode_Dump(ByteCode_t *vmcode)
 	case OPMUL:
 		DBG_P("OPMUL :");
 		break;
-	case OPDEV:
-		DBG_P("OPDEV :");
+	case OPDIV:
+		DBG_P("OPDIV :");
 		break;
 	case OPLT :
 		DBG_P("OPLT :");
 		break;
-	case OPLEQ:
-		DBG_P("OPLEQ :");
-		break;
 	case OPGT :
 		DBG_P("OPGT :");
-		break;
-	case OPGEQ:
-		DBG_P("OPGEQ :");
 		break;
 	case OPIF :
 		DBG_P("OPIF :");
 		break;
 	case OPJMP :
 		DBG_P("OPJMP :");
-		break;
-	case OPDEFUN :
-		DBG_P("OPDEFUN :");
 		break;
 	case OPMOV :
 		DBG_P("OPMOV :");
@@ -65,8 +56,8 @@ int VirtualMachine_DirectThreadedCode_Run(ByteCode_t *op, int *sp)
 
 	static const void *VM_Instruction_Table[] = {
 		&&OPLOAD, &&OPADD, &&OPSUB, &&OPMUL, &&OPDIV,
-		&&OPLT, &&OPLEQ, &&OPGT,
-		&&OPGEQ, &&OPIF, &&OPJMP, &&OPDEFUN, &&OPMOV, &&OPCALL, &&OPRET
+		&&OPLT,  &&OPGT,
+		&&OPIF, &&OPJMP, &&OPMOV, &&OPCALL, &&OPRET
 	};
 
 	goto OP_NEXT;
@@ -103,41 +94,13 @@ OPDIV:
 
 OPLT:
 	Code_Dump(opcode);
-	if(Reg[opcode->reg1] < Reg[opcode->reg2]) {
-		Reg[opcode->reg0] = 1;
-	}else{
-		Reg[opcode->reg0] = 0;
-	}
-	opcode++;
-	goto OP_NEXT;
-
-OPLEQ:
-	Code_Dump(opcode);
-	if(Reg[opcode->reg1] <= Reg[opcode->reg2]) {
-		Reg[opcode->reg0] = 1;
-	}else{
-		Reg[opcode->reg0] = 0;
-	}
+	(Reg[opcode->reg1] < Reg[opcode->reg2]) ? (Reg[opcode->reg0] = 1) : (Reg[opcode->reg0] = 0);
 	opcode++;
 	goto OP_NEXT;
 
 OPGT:
 	Code_Dump(opcode);
-	if(Reg[opcode->reg1] > Reg[opcode->reg2]) {
-		Reg[opcode->reg0] = 1;
-	}else{
-		Reg[opcode->reg0] = 0;
-	}
-	opcode++;
-	goto OP_NEXT;
-
-OPGEQ:
-	Code_Dump(opcode);
-	if(Reg[opcode->reg1] >= Reg[opcode->reg2]) {
-		Reg[opcode->reg0] = 1;
-	}else{
-		Reg[opcode->reg0] = 0;
-	}
+	(Reg[opcode->reg1] > Reg[opcode->reg2]) ? (Reg[opcode->reg0] = 1) : (Reg[opcode->reg0] = 0);
 	opcode++;
 	goto OP_NEXT;
 
@@ -154,8 +117,6 @@ OPJMP:
 	Code_Dump(opcode);
 	opcode = opcode->pc2;
 	goto OP_NEXT;
-
-OPDEFUN:
 
 OPMOV:
 	Code_Dump(opcode);
