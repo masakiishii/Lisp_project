@@ -51,12 +51,9 @@ char **Tokenizer_spliter(char *line)
 		}
 	}
 	token[i] = NULL;
-//	Dump_Token(token);
 
 	return token;
 }
-
-
 
 void Tokenizer_dump(char **token)
 {
@@ -66,6 +63,7 @@ void Tokenizer_dump(char **token)
 		i++;
 	}
 }
+
 int freelist_token_stack = 0;
 void Tokenizer_delete(char **token, Tokenizer *t)
 {
@@ -83,7 +81,6 @@ void Tokenizer_delete(char **token, Tokenizer *t)
 		}
 	}
 }
-
 
 Tokenizer *new_Tokenizer(void)
 {
