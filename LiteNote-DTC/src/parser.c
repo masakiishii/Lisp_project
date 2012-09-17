@@ -7,7 +7,7 @@ int defun_call = OFF;
 
 ConsCell *new_ConsCell(void)
 {
-	ConsCell *Cell = (ConsCell *)malloc(sizeof(ConsCell));
+	ConsCell *Cell = (ConsCell *)imalloc(sizeof(ConsCell));
 	Cell->celltype = 0;
 	Cell->car = NULL;
 	Cell->ivalue = 0;
@@ -18,17 +18,32 @@ ConsCell *new_ConsCell(void)
 
 Parser *new_Parser(void)
 {
+	int i;
 	Parser *p = (Parser *)imalloc(sizeof(Parser));
 	p->parser = Parser_parser;
 	p->delete = Parser_delete;
 	p->dump   = Parser_Dump;
+	for(i = 0;i < FREELIST;i++) {
+		p->freelist[i] = NULL;
+	}
 	return p;
 }
 
-void Parser_delete(Parser *p)
+int freelist_cell_stack = 0;
+void Parser_delete(ConsCell *root, Parser *p)
 {
-	free(p);
-	p = NULL;
+	if(defun_flag == ON) {
+		p->freelist[freelist_cell_stack] = root;
+		freelist_cell_stack++;
+	}else{
+		if(root->cdr != NULL) {
+			Parser_delete(root->cdr, p);
+		}else if(root->car != NULL) {
+			Parser_delete(root->car, p);
+		}else{
+			free(root);
+		}
+	}
 }
 
 ConsCell *Parser_parser(char **token)
@@ -37,15 +52,15 @@ ConsCell *Parser_parser(char **token)
 		return NULL;
 	}
 
-	ConsCell *head = (ConsCell *)malloc(sizeof(ConsCell));
+	ConsCell *head = (ConsCell *)imalloc(sizeof(ConsCell));
 
 	switch(**token){
 	
 	case '(' :
 		head->celltype = T_BEGIN;
 		treePointer++;
-		head->car = parse(treePointer);
-		head->cdr = parse(treePointer);
+		head->car = Parser_parser(treePointer);
+		head->cdr = Parser_parser(treePointer);
 		break;
 
 	case ')' :
@@ -58,43 +73,43 @@ ConsCell *Parser_parser(char **token)
 			head->celltype = T_NUMBER;
 			head->ivalue = strtol(*token, NULL, 10);
 			treePointer++;
-			head->cdr = parse(treePointer);
+			head->cdr = Parser_parser(treePointer);
 
 		}else{
 			head->celltype = T_SUB;
 			treePointer++;
-			head->cdr = parse(treePointer);
+			head->cdr = Parser_parser(treePointer);
 		}
 		break;
 
 	case '+' :
 		head->celltype = T_ADD;
 		treePointer++;
-		head->cdr = parse(treePointer); 
+		head->cdr = Parser_parser(treePointer); 
 		break;
 
 	case '*' :
 		head->celltype = T_MUL;
 		treePointer++;
-		head->cdr = parse(treePointer); 
+		head->cdr = Parser_parser(treePointer); 
 		break;
 
 	case '/' :
 		head->celltype = T_DIV;
 		treePointer++;
-		head->cdr = parse(treePointer); 
+		head->cdr = Parser_parser(treePointer); 
 		break;
 
 	case '<' :
 		head->celltype = T_LT;
 		treePointer++;
-		head->cdr = parse(treePointer);
+		head->cdr = Parser_parser(treePointer);
 		break;
 
 	case '>' :
 		head->celltype = T_GT;
 		treePointer++;
-		head->cdr = parse(treePointer);
+		head->cdr = Parser_parser(treePointer);
 		break;
 
 	default :
@@ -102,46 +117,46 @@ ConsCell *Parser_parser(char **token)
 			head->celltype = T_NUMBER;
 			head->ivalue = strtol(*token, NULL, 10);
 			treePointer++;
-			head->cdr = parse(treePointer);
+			head->cdr = Parser_parser(treePointer);
 		}else if(isalpha(**token)) {
 			if((strncmp(*token, "if", 3) == 0)) {
 				head->celltype = T_IF;
 				head->svalue = *token;
 				treePointer++;
-				head->cdr = parse(treePointer);
+				head->cdr = Parser_parser(treePointer);
 			}else if((strncmp(*token, "setq", 5) == 0)) {
 				setq_flag = 1;
 				head->celltype = T_SETQ;
 				treePointer++;
-				head->cdr = parse(treePointer);
+				head->cdr = Parser_parser(treePointer);
 			}else if((strncmp(*token, "defun", 6) == 0)) {
 				head->celltype = T_DEFUN;
 				defun_flag = ON;
 				treePointer++;
-				head->cdr = parse(treePointer);
+				head->cdr = Parser_parser(treePointer);
 			}else{
 				if(((**(token-1) == '(') && (defun_flag != ON)) || (strncmp(*(token-1), "defun", 6) == 0)) {
 					head->celltype = T_FUNC;				
 					head->svalue = *token;
 					defun_call = ON;
 					treePointer++;
-					head->cdr = parse(treePointer);
+					head->cdr = Parser_parser(treePointer);
 				}else if(((**(token-1) == '(') && (defun_call == OFF)) || ((defun_flag == ON) && (**(token-1) != '('))) {
 					head->celltype = T_ARGUMENT;
 					head->svalue = *token;
 					treePointer++;
-					head->cdr = parse(treePointer);
+					head->cdr = Parser_parser(treePointer);
 				}else{
 					if(defun_flag == ON) {
 						head->celltype = T_FUNC;				
 						head->svalue = *token;
 						treePointer++;
-						head->cdr = parse(treePointer);
+						head->cdr = Parser_parser(treePointer);
 					}else{
 						head->celltype = T_STRING;
 						head->svalue = *token;
 						treePointer++;
-						head->cdr = parse(treePointer);
+						head->cdr = Parser_parser(treePointer);
 					}
 				}
 			}
@@ -162,14 +177,14 @@ void Parser_Dump(ConsCell *root, int level)
 		switch(root->celltype){
 		case T_BEGIN    :
 			if(root->cdr != NULL) {
-				Tree_Dump(root->cdr, level+1);
+				Parser_Dump(root->cdr, level+1);
 			}else if( (root->cdr == NULL) && (level != 0) ){
-				Tree_Dump(root->cdr, level+1);
+				Parser_Dump(root->cdr, level+1);
 			}
 			for(i=0;i<level;i++)
 				fprintf(stderr,"  ");
 			fprintf(stderr,"'('\n");
-			Tree_Dump(root->car, level+1);
+			Parser_Dump(root->car, level+1);
 			break;
 		case T_END :
 			for(i=0;i<level;i++)
@@ -177,7 +192,7 @@ void Parser_Dump(ConsCell *root, int level)
 			fprintf(stderr,"')'\n");
 			break;
 		case T_ADD     :
-			Tree_Dump(root->cdr, level+1);
+			Parser_Dump(root->cdr, level+1);
 
 			for(i=0;i<level;i++)
 				fprintf(stderr,"  ");
@@ -185,77 +200,77 @@ void Parser_Dump(ConsCell *root, int level)
 			break;
 
 		case T_SUB     :
-			Tree_Dump(root->cdr, level+1);
+			Parser_Dump(root->cdr, level+1);
 			for(i=0;i<level;i++)
 				fprintf(stderr,"  ");
 			fprintf(stderr,"'-'\n");
 			break;
 
 		case T_MUL    :
-			Tree_Dump(root->cdr, level+1);
+			Parser_Dump(root->cdr, level+1);
 			for(i=0;i<level;i++)
 				fprintf(stderr,"  ");
 			fprintf(stderr,"'*'\n");
 			break;
 
 		case T_DIV     :
-			Tree_Dump(root->cdr, level+1);
+			Parser_Dump(root->cdr, level+1);
 			for(i=0;i<level;i++)
 				fprintf(stderr,"  ");
 			fprintf(stderr,"'/'\n");
 			break;
 
 		case T_LT    :
-			Tree_Dump(root->cdr, level+1);
+			Parser_Dump(root->cdr, level+1);
 			for(i=0;i<level;i++)
 				fprintf(stderr,"  ");
 			fprintf(stderr,"'<'\n");
 			break;
 
 		case T_GT    :
-			Tree_Dump(root->cdr, level+1);
+			Parser_Dump(root->cdr, level+1);
 			for(i=0;i<level;i++)
 				fprintf(stderr,"  ");
 			fprintf(stderr,"'>'\n");
 			break;
 
 		case T_NUMBER   :
-			Tree_Dump(root->cdr, level+1);
+			Parser_Dump(root->cdr, level+1);
 			for(i=0;i<level;i++)
 				fprintf(stderr,"  ");
 			fprintf(stderr,"%d\n", root->ivalue);
 			break;
 
 		case T_IF       :
-			Tree_Dump(root->cdr, level+1);
+			Parser_Dump(root->cdr, level+1);
 			for(i=0;i<level;i++)
 				fprintf(stderr,"  ");
 			fprintf(stderr,"if\n");
 			break;
 
 		case T_SETQ     :
-			Tree_Dump(root->cdr, level+1);
+			Parser_Dump(root->cdr, level+1);
 			for(i=0;i<level;i++)
 				fprintf(stderr,"  ");
 			fprintf(stderr,"setq\n");
 			break;
 
 		case T_DEFUN    :
-			Tree_Dump(root->cdr, level+1);
+			Parser_Dump(root->cdr, level+1);
 			for(i=0;i<level;i++)
 				fprintf(stderr,"  ");
 			fprintf(stderr,"defun\n");
 			break;
 
 		case T_FUNC   :
-			Tree_Dump(root->cdr, level+1);
+			Parser_Dump(root->cdr, level+1);
 			for(i=0;i<level;i++)
 				fprintf(stderr,"  ");
 			fprintf(stderr,"F:%s\n", root->svalue);
 			break;
 
 		case T_STRING   :
-			Tree_Dump(root->cdr, level+1);
+			Parser_Dump(root->cdr, level+1);
 			for(i=0;i<level;i++)
 				fprintf(stderr,"  ");
 			fprintf(stderr,"S:%s\n", root->svalue);
@@ -263,7 +278,7 @@ void Parser_Dump(ConsCell *root, int level)
 
 
 		case T_ARGUMENT :
-			Tree_Dump(root->cdr, level+1);
+			Parser_Dump(root->cdr, level+1);
 			for(i=0;i<level;i++)
 				fprintf(stderr,"  ");
 			fprintf(stderr,"A:%s\n", root->svalue);

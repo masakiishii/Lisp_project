@@ -44,10 +44,10 @@ VirtualMachineByteCodeLine *search_func_hash(char *key)
 	p = functable[hash(str)];
 
 	while(p != NULL) {
-		if(strcmp(p->key, str)) {
-			p = p->next;
-		}else{
+		if(strncmp(p->key, str, sizeof(str)) == 0) {
 			break;
+		}else{
+			p = p->next;
 		}
 	}
 	if(p == NULL) {

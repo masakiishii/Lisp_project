@@ -34,6 +34,8 @@ void ilisp_shell(void)
 void ilisp_script(char **input)
 {
 	char line[256] = {0};
+	char **tmp_token;
+	ConsCell *tmp_cell;
 	FILE *fp = fopen(input[1], "r");;
 
 	if(fp == NULL) {
@@ -44,33 +46,49 @@ void ilisp_script(char **input)
 
 	Tokenizer *t = new_Tokenizer();
 	Parser *p = new_Parser();
+	VirtualMachineByteCodeLine *func  = (VirtualMachineByteCodeLine *)imalloc(sizeof(VirtualMachineByteCodeLine));
 
 	while(fgets(line, 256, fp) != NULL) {
 		fprintf(stderr, "%s\n", line);
-		ilisp_main(t, p, line);
+		ilisp_main(t, p, line, func);
+	}
+
+	while(freelist_token_stack--) {
+		tmp_token = t->freelist[freelist_token_stack];
+		t->delete(tmp_token, t);
+	
+	}
+	while(freelist_cell_stack--) {
+		tmp_cell = p->freelist[freelist_cell_stack];
+		p->delete(tmp_cell, p);
+	
 	}
 	fclose(fp);
 	free(t);
 	free(p);
+	free(func);
 }
 
-void ilisp_main(Tokenizer *t, Parser *p, char *line)
+ConsCell *rootPointer;
+void ilisp_main(Tokenizer *t, Parser *p, char *line, VirtualMachineByteCodeLine *func)
 {
 	char **token = t->spliter(line);
+	treePointer = token;
 	ConsCell *root = p->parser(token);
-	VirtualMachineByteCodeLine *func;
+	rootPointer = root;
+//	VirtualMachineByteCodeLine *func;
 	int reg[256];
 
 #ifdef DEBUG_MODE
 	DBG_P("==========<<<Dump>>>===========");
 	t->dump(token);
-	p->dump(root);
+	p->dump(root, 0);
 #endif
 
 	Compiler *c = new_Compiler();
 	VirtualMachine *vm = new_VirtualMachine();
 
-	func = (VirtualMachineByteCodeLine *)malloc(sizeof(VirtualMachineByteCodeLine));
+//	func = (VirtualMachineByteCodeLine *)imalloc(sizeof(VirtualMachineByteCodeLine));
 	func->index = 0;
 //	func->cons = tree_head;
 	func->cons = root;
@@ -81,10 +99,10 @@ void ilisp_main(Tokenizer *t, Parser *p, char *line)
 	if(defun_flag == OFF) {
 		fprintf(stderr, "%d\n", vm->DirectThreadedCode_Run(func->code, reg));
 	}
-	defun_flag = OFF;
 
 	c->delete(c);
-	t->delete(token);
-	p->delete(root);
+	t->delete(token, t);
+	p->delete(rootPointer, p);
 	vm->delete(vm);
+	defun_flag = OFF;
 }

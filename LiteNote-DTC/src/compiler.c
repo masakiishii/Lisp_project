@@ -29,7 +29,7 @@ void Compiler_compile(ConsCell *root, VirtualMachineByteCodeLine *func, int r)
 		root = root->car;
 		eval_pointer = root->cdr;
 //		if(root->celltype == T_OPERATOR){
-			Compiler(root, func, r);
+		Compiler_compile(root, func, r);
 //		}
 		break;
 
@@ -40,9 +40,9 @@ void Compiler_compile(ConsCell *root, VirtualMachineByteCodeLine *func, int r)
 	case T_ADD :
 		DBG_P("=====<<<OPADD>>>=====");
 		eval_pointer = root->cdr;
-		Compiler(eval_pointer, func, r);
+		Compiler_compile(eval_pointer, func, r);
 		while((eval_pointer->cdr->celltype != T_END)){
-			Compiler(eval_pointer->cdr, func, r+1);
+			Compiler_compile(eval_pointer->cdr, func, r+1);
 			func->code[func->index].op = OPADD;
 			func->code[func->index].reg0 = r;
 			func->code[func->index].reg1 = r;
@@ -55,9 +55,9 @@ void Compiler_compile(ConsCell *root, VirtualMachineByteCodeLine *func, int r)
 	case T_SUB :
 		DBG_P("=====<<<OPSUB>>>=====");
 		eval_pointer = root->cdr;
-		Compiler(eval_pointer, func, r);
+		Compiler_compile(eval_pointer, func, r);
 		while((eval_pointer->cdr->celltype != T_END)){
-			Compiler(eval_pointer->cdr, func, r+1);
+			Compiler_compile(eval_pointer->cdr, func, r+1);
 			func->code[func->index].op = OPSUB;
 			func->code[func->index].reg0 = r;
 			func->code[func->index].reg1 = r;
@@ -70,9 +70,9 @@ void Compiler_compile(ConsCell *root, VirtualMachineByteCodeLine *func, int r)
 	case T_MUL :
 		DBG_P("=====<<<OPMUL>>>=====");
 		eval_pointer = root->cdr;
-		Compiler(eval_pointer, func, r);
+		Compiler_compile(eval_pointer, func, r);
 		while((eval_pointer->cdr->celltype != T_END)){
-			Compiler(eval_pointer->cdr, func, r+1);
+			Compiler_compile(eval_pointer->cdr, func, r+1);
 			func->code[func->index].op = OPMUL;
 			func->code[func->index].reg0 = r;
 			func->code[func->index].reg1 = r;
@@ -85,9 +85,9 @@ void Compiler_compile(ConsCell *root, VirtualMachineByteCodeLine *func, int r)
 	case T_DIV :
 		DBG_P("=====<<<OPDIV>>>=====");
 		eval_pointer = root->cdr;
-		Compiler(eval_pointer, func, r);
+		Compiler_compile(eval_pointer, func, r);
 		while((eval_pointer->cdr->celltype != T_END)){
-			Compiler(eval_pointer->cdr, func, r+1);
+			Compiler_compile(eval_pointer->cdr, func, r+1);
 			func->code[func->index].op = OPDIV;
 			func->code[func->index].reg0 = r;
 			func->code[func->index].reg1 = r;
@@ -99,8 +99,8 @@ void Compiler_compile(ConsCell *root, VirtualMachineByteCodeLine *func, int r)
 	case T_LT :
 		DBG_P("=====<<<OPLT>>>=====");
 		eval_pointer = root->cdr;
-		Compiler(eval_pointer, func, r);
-		Compiler(eval_pointer->cdr, func, r+1);
+		Compiler_compile(eval_pointer, func, r);
+		Compiler_compile(eval_pointer->cdr, func, r+1);
 		func->code[func->index].op = OPLT;
 		func->code[func->index].reg0 = r;
 		func->code[func->index].reg1 = r;
@@ -110,8 +110,8 @@ void Compiler_compile(ConsCell *root, VirtualMachineByteCodeLine *func, int r)
 	case T_GT :
 		DBG_P("=====<<<OPGT>>>=====");
 		eval_pointer = root->cdr;
-		Compiler(eval_pointer, func, r);
-		Compiler(eval_pointer->cdr, func, r+1);
+		Compiler_compile(eval_pointer, func, r);
+		Compiler_compile(eval_pointer->cdr, func, r+1);
 		func->code[func->index].op = OPGT;
 		func->code[func->index].reg0 = r;
 		func->code[func->index].reg1 = r;
@@ -122,18 +122,18 @@ void Compiler_compile(ConsCell *root, VirtualMachineByteCodeLine *func, int r)
 	case T_IF :
 		DBG_P("=====<<<T_IF>>>=====");
 		eval_pointer = root->cdr;
-		Compiler(eval_pointer, func, r);
+		Compiler_compile(eval_pointer, func, r);
 		func->code[func->index].op = OPIF;
 		func->code[func->index].reg0 = r;
 		if_index = func->index;
 		func->index++;
-		Compiler(eval_pointer->cdr, func, r);
+		Compiler_compile(eval_pointer->cdr, func, r);
 		func->code[func->index].op = OPJMP;
 		func->code[func->index].reg0 = 0;
 		jump_index = func->index;
 		func->index++;
 		func->code[if_index].pc2 = &func->code[func->index];
-		Compiler(eval_pointer->cdr->cdr, func, r);
+		Compiler_compile(eval_pointer->cdr->cdr, func, r);
 		func->code[jump_index].pc2 = &func->code[func->index];
 		break;
 
@@ -151,7 +151,7 @@ void Compiler_compile(ConsCell *root, VirtualMachineByteCodeLine *func, int r)
 		hash_put(root->cdr->svalue, newfunc);
 		newfunc->index = 0;
 		newfunc->cons = root;
-		Compiler(eval_pointer->cdr->cdr, newfunc, counter);
+		Compiler_compile(eval_pointer->cdr->cdr, newfunc, counter);
 		newfunc->code[newfunc->index].op = OPRET;
 		newfunc->code[newfunc->index].reg0 = counter;
 		break;
@@ -161,7 +161,7 @@ void Compiler_compile(ConsCell *root, VirtualMachineByteCodeLine *func, int r)
 		int counter = 0;
 		s_func = search_func_hash(root->svalue);
 		while(root->cdr != NULL){
-			Compiler(root->cdr, func, r + counter);
+			Compiler_compile(root->cdr, func, r + counter);
 			root = root->cdr;
 			counter++;
 		}

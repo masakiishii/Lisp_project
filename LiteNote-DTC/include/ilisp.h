@@ -8,19 +8,29 @@
 #include <ctype.h>
 #define HASH_BACKET 64
 #define TOKENSIZE 1024
+#define FREELIST 8
 #define ON 1
 #define OFF 0
+#define EOL '\0'
 
-/* fprintf(stderr, "[%s:%d] ", __FILE__, __LINE__);		\ */
+
 //=======<<<DEBUG MODE>>>=======
 #ifdef DEBUG_MODE
 #define DBG_P(fmt, ...) {\
 		fprintf(stderr, fmt, ##__VA_ARGS__);					\
 		fprintf(stderr, "\n");								\
 	}											
+#define DBG_PL(fmt, ...) {\
+		fprintf(stderr, "[%s:%d] ", __FILE__, __LINE__);	\
+		fprintf(stderr, fmt, ##__VA_ARGS__);				\
+		fprintf(stderr, "\n");								\
+	}											
 #else
-#define DBG_P(fmt, ...) {						\
+#define DBG_P(fmt, ...) {\
 	}
+#define DBG_PL(fmt, ...) {\
+	}
+
 #endif
 //==============================
 
@@ -96,19 +106,21 @@ typedef struct _VirtualMachineByteCodeLine {
 typedef struct _FuncTable {
 	VirtualMachineByteCodeLine *fn_t;
 	char *key;
-	struct FuncTable *next;
+	struct _FuncTable *next;
 } FuncTable;
 
 typedef struct _Tokenizer {
 	char **(*spliter)(char *line);
-	void (*delete)(char **token);
+	void (*delete)(char **token, struct _Tokenizer *t);
 	void (*dump)(char **token);
+	char **freelist[FREELIST];
 } Tokenizer;
 
 typedef struct _Parser {
 	ConsCell *(*parser)(char **token);
-	void (*delete)(ConsCell *root);
-	void (*dump)(ConsCell *root);
+	void (*delete)(ConsCell *root, struct _Parser *p);
+	void (*dump)(ConsCell *root, int level);
+	ConsCell *freelist[FREELIST];
 } Parser;
 
 typedef struct _Compiler {
@@ -126,30 +138,32 @@ typedef struct _VirtualMachine {
 //=====================<<<Global Value>>>===========================
 extern int token_pointer;
 extern char **treePointer;
+extern ConsCell *rootPointer;
 extern int f_null_flag;
 extern int setq_flag;
 extern int defun_flag;
 extern int defun_call;
-
+extern int freelist_token_stack;
+extern int freelist_cell_stack;
 //=====================<<<Function>>================================
 int main(int argc, char **argv);
 void ilisp_shell(void);
 void ilisp_script(char **input);
-void ilisp_main(Tokenizer *t, Parser *p, char *line);
+void ilisp_main(Tokenizer *t, Parser *p, char *line, VirtualMachineByteCodeLine *func);
 
 void *imalloc(size_t size);
 
 Tokenizer *new_Tokenizer(void);
 char **Tokenizer_spliter(char *line);
-void Tokenizer_delete(Tokenizer *t);
+void Tokenizer_delete(char **token, Tokenizer *t);
 void Tokenizer_dump(char **token);
 
 
 ConsCell *new_ConsCell(void);
 Parser *new_Parser(void);
-void Parser_delete(Parser *p);
+void Parser_delete(ConsCell *root, Parser *p);
 ConsCell *Parser_parser(char **token);
-void Parser_Dump(ConsCell *root, int head);
+void Parser_Dump(ConsCell *root, int level);
 
 
 Compiler *new_Compiler(void);
