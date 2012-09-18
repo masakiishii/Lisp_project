@@ -1,4 +1,4 @@
-#include "ilisp.h"
+#include <ilisp.h>
 
 void ilisp_shell(void)
 {

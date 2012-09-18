@@ -1,4 +1,4 @@
-#include "ilisp.h"
+#include <ilisp.h>
 
 VirtualMachine *new_VirtualMachine(void)
 {

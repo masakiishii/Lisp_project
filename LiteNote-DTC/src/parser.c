@@ -1,4 +1,4 @@
-#include "ilisp.h"
+#include <ilisp.h>
 
 char **treePointer = NULL;
 int setq_flag = 0;
@@ -10,8 +10,8 @@ ConsCell *new_ConsCell(void)
 	ConsCell *Cell = (ConsCell *)imalloc(sizeof(ConsCell));
 	Cell->celltype = 0;
 	Cell->car = NULL;
-	Cell->ivalue = 0;
-	Cell->svalue = NULL;
+//	Cell->ivalue = 0;
+//	Cell->svalue = NULL;
 	Cell->cdr = NULL;
 	return Cell;
 }
@@ -36,12 +36,26 @@ void Parser_delete(ConsCell *root, Parser *p)
 		p->freelist[freelist_cell_stack] = root;
 		freelist_cell_stack++;
 	}else{
-		if(root->cdr != NULL) {
-			Parser_delete(root->cdr, p);
-		}else if(root->car != NULL) {
-			Parser_delete(root->car, p);
-		}else{
-			free(root);
+		if(root != NULL) {
+			switch(root->celltype) {
+			case T_BEGIN:
+				if(root->cdr != NULL) {
+					Parser_delete(root->cdr, p);
+				}
+				Parser_delete(root->car, p);
+				free(root);
+				root = NULL;
+				break;
+			case T_END:
+				free(root);
+				root = NULL;
+				break;
+			default :
+				Parser_delete(root->cdr, p);
+				free(root);
+				root = NULL;
+				break;
+			}
 		}
 	}
 }
