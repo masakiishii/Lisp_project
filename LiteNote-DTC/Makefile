@@ -11,6 +11,7 @@ OBJS=\
     build/parser.o \
 	build/compiler.o \
 	build/vm.o \
+	build/map.o \
 	build/hash.o
 
 .PHONY: all
@@ -39,6 +40,9 @@ build/compiler.o: src/compiler.c # include/ilisp.h
 	$(CC) $(CFLAGS) -o $@ -c $^
 
 build/vm.o: src/vm.c # include/ilisp.h
+	$(CC) $(CFLAGS) -o $@ -c $^
+
+build/map.o: src/map.c # include/ilisp.h
 	$(CC) $(CFLAGS) -o $@ -c $^
 
 build/hash.o: src/hash.c # include/ilisp.h

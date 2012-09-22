@@ -13,8 +13,7 @@
 #define OFF 0
 #define EOL '\0'
 
-
-//=======<<<DEBUG MODE>>>=======
+//================<<<DEBUG MODE>>>===================================
 #ifdef DEBUG_MODE
 #define DBG_P(fmt, ...) {\
 		fprintf(stderr, fmt, ##__VA_ARGS__);					\
@@ -32,8 +31,10 @@
 	}
 
 #endif
-//==============================
+//===================================================================
 
+
+//================<<<enum type>>>====================================
 typedef enum CellType {
 	T_BEGIN,
 	T_END,
@@ -67,7 +68,7 @@ typedef enum OpCode {
 	OPRET
 } OpCode;
 
-
+//================<<<Structure>>>====================================
 typedef struct _Token {
 	CellType type;
 	char *str;
@@ -82,6 +83,11 @@ typedef struct _ConsCell {
 	};
 	struct _ConsCell *cdr;
 } ConsCell;
+
+typedef struct _Map {
+	const char *key;
+	void *value;
+} Map;
 
 typedef struct _ByteCode {
 	OpCode op;
@@ -135,7 +141,7 @@ typedef struct _VirtualMachine {
 } VirtualMachine;
 
 
-//=====================<<<Global Value>>>===========================
+//=====================<<<Global Value>>>==============================
 extern int token_pointer;
 extern char **treePointer;
 extern ConsCell *rootPointer;
@@ -145,41 +151,48 @@ extern int defun_flag;
 extern int defun_call;
 extern int freelist_token_stack;
 extern int freelist_cell_stack;
-//=====================<<<Function>>================================
+
+//=====================<<<Main>>>=======================================
 int main(int argc, char **argv);
 void ilisp_shell(void);
 void ilisp_script(char **input);
 void ilisp_main(Tokenizer *t, Parser *p, char *line, VirtualMachineByteCodeLine *func);
 
+//=====================<<<Memory>>>=====================================
 void *imalloc(size_t size);
 
+//=====================<<<Tokenizer>>>==================================
 Tokenizer *new_Tokenizer(void);
 char **Tokenizer_spliter(char *line);
 void Tokenizer_delete(char **token, Tokenizer *t);
 void Tokenizer_dump(char **token);
 
-
+//=====================<<<Parser>>>=====================================
 ConsCell *new_ConsCell(void);
 Parser *new_Parser(void);
 void Parser_delete(ConsCell *root, Parser *p);
 ConsCell *Parser_parser(char **token);
 void Parser_Dump(ConsCell *root, int level);
 
-
+//=====================<<<Compiler>>>===================================
 Compiler *new_Compiler(void);
 void Compiler_delete(Compiler *c);
 void Compiler_compile(ConsCell *root, VirtualMachineByteCodeLine *func, int r);
 
-
+//=====================<<<VirtualMachine>>>=============================
 VirtualMachine *new_VirtualMachine(void);
 int VirtualMachine_DirectThreadedCode_Run(ByteCode *op, int *sp);
 void VirtualMachine_ByteCode_Dump(ByteCode *vmcode);
 void VirtualMachine_delete(VirtualMachine *vm);
+//=====================<<<Map>>>========================================
+Map *new_Map(const char *key, void *value);
+void store_to_virtualmachine_memory(Map *map);
+void *fetch_from_virtualmachine_memory(const char *key);
 
+//=====================<<<Hash>>>========================================
 int hash(char *c);
 void make_hashtable_null(FuncTable **h_val);
 void hash_put(char *key,VirtualMachineByteCodeLine *value);
 VirtualMachineByteCodeLine *search_func_hash(char *key);
-
 
 #endif 
