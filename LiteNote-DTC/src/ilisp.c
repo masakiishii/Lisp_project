@@ -46,10 +46,9 @@ void ilisp_script(char **input)
 
 	Tokenizer *t = new_Tokenizer();
 	Parser *p = new_Parser();
-	VirtualMachineByteCodeLine *func  = (VirtualMachineByteCodeLine *)imalloc(sizeof(VirtualMachineByteCodeLine));
+	VirtualMachineByteCodeLine *func  = new_VirtualMachineByteCodeLine();
 
 	while(fgets(line, 256, fp) != NULL) {
-
 		fprintf(stderr, "%s\n", line);
 		ilisp_main(t, p, line, func);
 	}
@@ -67,6 +66,7 @@ void ilisp_script(char **input)
 	fclose(fp);
 	free(t);
 	free(p);
+	free(func->code);
 	free(func);
 }
 
@@ -90,15 +90,16 @@ void ilisp_main(Tokenizer *t, Parser *p, char *line, VirtualMachineByteCodeLine 
 	VirtualMachine *vm = new_VirtualMachine();
 
 //	func = (VirtualMachineByteCodeLine *)imalloc(sizeof(VirtualMachineByteCodeLine));
-	func->index = 0;
+//	func->index = 0;
 //	func->cons = tree_head;
 	func->cons = root;
-	c->compiler(root, func, 0);
+	c->compile(root, func, 0);
 	func->code[func->index].op = OPRET;
 	func->code[func->index].reg0 = 0;
+	func->size = func->index-1;
 
 	if(defun_flag == OFF) {
-		fprintf(stderr, "%d\n", vm->DirectThreadedCode_Run(func->code, reg));
+		fprintf(stderr, "%d\n", vm->DirectThreadedCode_Run(func, reg));
 	}
 	c->delete(c);
 	t->delete(token, t);

@@ -9,6 +9,7 @@
 #define HASH_BACKET 64
 #define TOKENSIZE 1024
 #define FREELIST 8
+#define VIRTUALMAChINE_BYTECODE_SIZE 256
 #define ON 1
 #define OFF 0
 #define EOL '\0'
@@ -65,6 +66,9 @@ typedef enum OpCode {
 	OPJMP,
 	OPMOV,
 	OPCALL,
+	OPFASTCALL, //specialized instruction
+	OPiSUBC,    //specialized instruction
+	OPiLTC,    //specialized instruction
 	OPRET
 } OpCode;
 
@@ -101,12 +105,17 @@ typedef struct _ByteCode {
 		int data2;
 		struct _ByteCode *pc2;
 	};
+//	void *opnext;
+	const char *name;
 } ByteCode;
 
 typedef struct _VirtualMachineByteCodeLine {
-	ByteCode code[256];
+	ByteCode *code;
 	int index;
+	size_t size;
 	ConsCell *cons;
+	void (*remove)(struct _VirtualMachineByteCodeLine *line, int num);
+	void (*delete)(ByteCode *code);
 } VirtualMachineByteCodeLine;
 
 typedef struct _FuncTable {
@@ -130,12 +139,13 @@ typedef struct _Parser {
 } Parser;
 
 typedef struct _Compiler {
-	void (*compiler)(ConsCell *root, VirtualMachineByteCodeLine *func, int r);
+	void (*compile)(ConsCell *root, VirtualMachineByteCodeLine *func, int r);
+	void (*compileToFastCode)(VirtualMachineByteCodeLine *vmcode);
 	void (*delete)(struct _Compiler *c);
 } Compiler;
 
 typedef struct _VirtualMachine {
-	int (*DirectThreadedCode_Run)(ByteCode *bytecode, int *op);
+	int (*DirectThreadedCode_Run)(VirtualMachineByteCodeLine *op, int *sp);
 	void (*delete)(struct _VirtualMachine *vm);
 	void (*dump)(ByteCode *bytecode);
 } VirtualMachine;
@@ -178,12 +188,16 @@ void Parser_Dump(ConsCell *root, int level);
 Compiler *new_Compiler(void);
 void Compiler_delete(Compiler *c);
 void Compiler_compile(ConsCell *root, VirtualMachineByteCodeLine *func, int r);
+void Compiler_compileToFastCode(VirtualMachineByteCodeLine *vmcode);
 
 //=====================<<<VirtualMachine>>>=============================
 VirtualMachine *new_VirtualMachine(void);
-int VirtualMachine_DirectThreadedCode_Run(ByteCode *op, int *sp);
+VirtualMachineByteCodeLine *new_VirtualMachineByteCodeLine(void);
+int VirtualMachine_DirectThreadedCode_Run(VirtualMachineByteCodeLine *op, int *sp);
 void VirtualMachine_ByteCode_Dump(ByteCode *vmcode);
 void VirtualMachine_delete(VirtualMachine *vm);
+inline void VirtualMachine_createDirectThreadingCode(VirtualMachineByteCodeLine *vmcode, void **jmp_table);
+
 //=====================<<<Map>>>========================================
 Map *new_Map(const char *key, void *value);
 void store_to_virtualmachine_memory(Map *map);

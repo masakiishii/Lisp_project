@@ -10,8 +10,8 @@ ConsCell *new_ConsCell(void)
 	ConsCell *Cell = (ConsCell *)imalloc(sizeof(ConsCell));
 	Cell->celltype = 0;
 	Cell->car = NULL;
-//	Cell->ivalue = 0;
-//	Cell->svalue = NULL;
+	Cell->ivalue = 0;
+	Cell->svalue = NULL;
 	Cell->cdr = NULL;
 	return Cell;
 }

@@ -5,7 +5,8 @@ int defun_flag;
 Compiler *new_Compiler(void)
 {
 	Compiler *c = (Compiler *)imalloc(sizeof(Compiler));
-	c->compiler = Compiler_compile;
+	c->compile = Compiler_compile;
+	c->compileToFastCode = Compiler_compileToFastCode;
 	c->delete = Compiler_delete;
 	return c;
 }
@@ -147,7 +148,7 @@ void Compiler_compile(ConsCell *root, VirtualMachineByteCodeLine *func, int r)
 			arg = arg->cdr;
 		}
 		VirtualMachineByteCodeLine *newfunc;
-		newfunc = (VirtualMachineByteCodeLine *)malloc(sizeof(VirtualMachineByteCodeLine));
+		newfunc = new_VirtualMachineByteCodeLine();
 		//hash_put(root->cdr->svalue, newfunc);
 		Map *map = new_Map(root->cdr->svalue, (void *)newfunc);
 		store_to_virtualmachine_memory(map);
@@ -156,19 +157,16 @@ void Compiler_compile(ConsCell *root, VirtualMachineByteCodeLine *func, int r)
 		Compiler_compile(eval_pointer->cdr->cdr, newfunc, counter);
 		newfunc->code[newfunc->index].op = OPRET;
 		newfunc->code[newfunc->index].reg0 = counter;
-
-		//func->index = 0;
-		//func->cons = root;
-		//Compiler_compile(eval_pointer->cdr->cdr, func, counter);
-		//func->code[func->index].op = OPRET;
-		//func->code[func->index].reg0 = counter;
+		newfunc->size = newfunc->index - 1;
+		Compiler_compileToFastCode(newfunc);
 		break;
 
 	case T_FUNC:{
-		VirtualMachineByteCodeLine *s_func;
+		//VirtualMachineByteCodeLine *s_func;
 		int counter = 0;
+		eval_pointer = root;
 		//s_func = search_func_hash(root->svalue);
-		s_func = (VirtualMachineByteCodeLine *)fetch_from_virtualmachine_memory(root->svalue);
+		//s_func = (VirtualMachineByteCodeLine *)fetch_from_virtualmachine_memory(root->svalue);
 		while(root->cdr->celltype != T_END){
 			Compiler_compile(root->cdr, func, r + counter);
 			root = root->cdr;
@@ -176,7 +174,8 @@ void Compiler_compile(ConsCell *root, VirtualMachineByteCodeLine *func, int r)
 		}
 		func->code[func->index].op = OPCALL;
 		func->code[func->index].reg0 = r;
-		func->code[func->index].pc2 = &s_func->code[0];
+		func->code[func->index].name = eval_pointer->svalue;
+		//func->code[func->index].pc2 = &s_func->code[0];
 		func->index++;
 		break;
 	}
@@ -210,3 +209,55 @@ void Compiler_compile(ConsCell *root, VirtualMachineByteCodeLine *func, int r)
 	}
 }
 
+
+void Compiler_compileToFastCode(VirtualMachineByteCodeLine *vmcode)
+{
+	int i;
+	ByteCode *code = vmcode->code;
+	static int remove_counter = 0;
+	static int jmp_index = 0;
+
+
+	for(i = 0; code[i].op != OPRET; i++) {
+		switch(code[i].op) {
+		case OPCALL:
+			code[i].op = OPFASTCALL;
+			break;
+		case OPSUB:
+			if(code[i - 1].op == OPLOAD && code[i - 2].op == OPMOV) {
+				code[i].op = OPiSUBC;
+				code[i].data2 = code[i - 1].data1;
+				code[i].reg1 = code[i - 2].reg1;
+				vmcode->remove(vmcode, i - 1);
+				vmcode->remove(vmcode, i - 2);
+				i -= 2;
+				remove_counter += 2;
+			}
+			break;
+
+		case OPLT :
+			if(code[i - 1].op == OPLOAD && code[i - 2].op == OPMOV) {
+				code[i].op = OPiLTC;
+				code[i].data2 = code[i - 1].data1;
+				code[i].reg1 = code[i - 2].reg1;
+				vmcode->remove(vmcode, i - 1);
+				vmcode->remove(vmcode, i - 2);
+				i -= 2;
+				remove_counter += 2;
+			}
+			break;
+
+		case OPJMP:
+			jmp_index = i;
+			break;
+
+		case OPIF :
+			code[i].pc2 -= remove_counter;
+			break;
+
+		default:
+			break;
+		}
+	}
+	code[jmp_index].pc2 -= remove_counter;
+}

@@ -2,52 +2,52 @@
 
 char **Tokenizer_spliter(char *line)
 {
-	char *current_ptr = line;
-	char *previous_ptr = line;
-	char **token = (char **)malloc(sizeof(char *) * TOKENSIZE);
+	char *current = line;
+	char *previous = line;
+	char **token = (char **)imalloc(sizeof(char *) * TOKENSIZE);
 	int i = 0;
 
-	while(*current_ptr != EOL) {
+	while(*current != EOL) {
 
-		switch(*current_ptr) {
+		switch(*current) {
 
 		case ')':
-			if((*(current_ptr - 1) != ' ') && (*(current_ptr - 1) != ')')) {
-				token[i] = strndup(previous_ptr, current_ptr - previous_ptr);
-				token[i][current_ptr - previous_ptr] = EOL;
+			if((*(current - 1) != ' ') && (*(current - 1) != ')')) {
+				token[i] = strndup(previous, current - previous);
+				token[i][current - previous] = EOL;
 				i++;
 			}
-			token[i] = strndup(current_ptr, 1);
+			token[i] = strndup(current, 1);
 			token[i][1] = EOL;
 			i++;
-			current_ptr++;
-			previous_ptr = current_ptr;
+			current++;
+			previous = current;
 			break;
 
 		case ' ':
 		case '\n':
-			if(current_ptr == previous_ptr) {
-				current_ptr++;
-				previous_ptr = current_ptr;
+			if(current == previous) {
+				current++;
+				previous = current;
 				break;
 			}else{
-				token[i] = strndup(previous_ptr, current_ptr - previous_ptr);
-				token[i][current_ptr - previous_ptr] = EOL;
+				token[i] = strndup(previous, current - previous);
+				token[i][current - previous] = EOL;
 				i++;
-				current_ptr++;
-				previous_ptr = current_ptr;
+				current++;
+				previous = current;
 				break;
 			}
 
 		case '(': 
-			token[i] = strndup(current_ptr, 1);
+			token[i] = strndup(current, 1);
 			token[i][1] = EOL;
 			i++;
-			current_ptr++;
-			previous_ptr++;
+			current++;
+			previous++;
 			break;
 			
-		default : current_ptr++;
+		default : current++;
 		}
 	}
 	token[i] = NULL;
