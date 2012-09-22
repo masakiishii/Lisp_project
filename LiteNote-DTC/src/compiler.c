@@ -146,21 +146,22 @@ void Compiler_compile(ConsCell *root, VirtualMachineByteCodeLine *func, int r)
 			counter++;
 			arg = arg->cdr;
 		}
-		//VirtualMachineByteCodeLine *newfunc;
-		//newfunc = (VirtualMachineByteCodeLine *)malloc(sizeof(VirtualMachineByteCodeLine));
+		VirtualMachineByteCodeLine *newfunc;
+		newfunc = (VirtualMachineByteCodeLine *)malloc(sizeof(VirtualMachineByteCodeLine));
 		//hash_put(root->cdr->svalue, newfunc);
-		//newfunc->index = 0;
-		//newfunc->cons = root;
-		//Compiler_compile(eval_pointer->cdr->cdr, newfunc, counter);
-		//newfunc->code[newfunc->index].op = OPRET;
-		//newfunc->code[newfunc->index].reg0 = counter;
-		Map *map = new_Map(root->cdr->svalue, (void *)func);
+		Map *map = new_Map(root->cdr->svalue, (void *)newfunc);
 		store_to_virtualmachine_memory(map);
-		func->index = 0;
-		func->cons = root;
-		Compiler_compile(eval_pointer->cdr->cdr, func, counter);
-		func->code[func->index].op = OPRET;
-		func->code[func->index].reg0 = counter;
+		newfunc->index = 0;
+		newfunc->cons = root;
+		Compiler_compile(eval_pointer->cdr->cdr, newfunc, counter);
+		newfunc->code[newfunc->index].op = OPRET;
+		newfunc->code[newfunc->index].reg0 = counter;
+
+		//func->index = 0;
+		//func->cons = root;
+		//Compiler_compile(eval_pointer->cdr->cdr, func, counter);
+		//func->code[func->index].op = OPRET;
+		//func->code[func->index].reg0 = counter;
 		break;
 
 	case T_FUNC:{
@@ -168,7 +169,7 @@ void Compiler_compile(ConsCell *root, VirtualMachineByteCodeLine *func, int r)
 		int counter = 0;
 		//s_func = search_func_hash(root->svalue);
 		s_func = (VirtualMachineByteCodeLine *)fetch_from_virtualmachine_memory(root->svalue);
-		while(root->cdr != NULL){
+		while(root->cdr->celltype != T_END){
 			Compiler_compile(root->cdr, func, r + counter);
 			root = root->cdr;
 			counter++;

@@ -46,10 +46,10 @@ void ilisp_script(char **input)
 
 	Tokenizer *t = new_Tokenizer();
 	Parser *p = new_Parser();
-	VirtualMachineByteCodeLine *func;
+	VirtualMachineByteCodeLine *func  = (VirtualMachineByteCodeLine *)imalloc(sizeof(VirtualMachineByteCodeLine));
 
 	while(fgets(line, 256, fp) != NULL) {
-		func  = (VirtualMachineByteCodeLine *)imalloc(sizeof(VirtualMachineByteCodeLine));
+
 		fprintf(stderr, "%s\n", line);
 		ilisp_main(t, p, line, func);
 	}
