@@ -77,6 +77,7 @@ void ilisp_main(Tokenizer *t, Parser *p, char *line, VirtualMachineByteCodeLine 
 	treePointer = token;
 	ConsCell *root = p->parser(token);
 	rootPointer = root;
+	root = root->cdr;
 	int reg[256];
 
 #ifdef DEBUG_MODE

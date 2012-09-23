@@ -8,6 +8,7 @@
 #include <ctype.h>
 #define HASH_BACKET 64
 #define TOKENSIZE 1024
+#define BRANCHSIZE 32
 #define FREELIST 8
 #define VIRTUALMAChINE_BYTECODE_SIZE 256
 #define ON 1

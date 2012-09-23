@@ -1,7 +1,7 @@
 CC=gcc
 TARGET=ilisp
 LDLIBS=-lreadline
-CFLAGS=-Os -W -Wall -I./include/
+CFLAGS=-O2 -W -Wall -I./include/
 #CFLAGS=-g3 -O0 -DDEBUG_MODE=1 -W -Wall -I./include/
 OBJS=\
 	build/main.o \

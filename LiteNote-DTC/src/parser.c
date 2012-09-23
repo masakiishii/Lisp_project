@@ -66,119 +66,250 @@ ConsCell *Parser_parser(char **token)
 		return NULL;
 	}
 
-	ConsCell *head = (ConsCell *)imalloc(sizeof(ConsCell));
+	ConsCell *head = new_ConsCell();
+	ConsCell *path = head;
+	ConsCell *branch[BRANCHSIZE] = {NULL};
+	int branch_count = 0;
 
-	switch(**token){
-	
-	case '(' :
-		head->celltype = T_BEGIN;
-		treePointer++;
-		head->car = Parser_parser(treePointer);
-		head->cdr = Parser_parser(treePointer);
-		break;
+	while(*token != NULL) {
+		switch(**token){
+		case '(' :
+			path->cdr = new_ConsCell();
+			path = path->cdr;
+			path->celltype = T_BEGIN;
+			branch[branch_count++] = path;
+			break;
 
-	case ')' :
-		head->celltype = T_END;
-		treePointer++;
-		break;
+		case ')' :
+			path->cdr = new_ConsCell();
+			path = path->cdr;
+			path->celltype = T_END;
+			path = branch[--branch_count];
+			break;
 	   
-	case '-' :
-		if(isalnum(*(*token+1))) {
-			head->celltype = T_NUMBER;
-			head->ivalue = strtol(*token, NULL, 10);
-			treePointer++;
-			head->cdr = Parser_parser(treePointer);
-
-		}else{
-			head->celltype = T_SUB;
-			treePointer++;
-			head->cdr = Parser_parser(treePointer);
-		}
-		break;
-
-	case '+' :
-		head->celltype = T_ADD;
-		treePointer++;
-		head->cdr = Parser_parser(treePointer); 
-		break;
-
-	case '*' :
-		head->celltype = T_MUL;
-		treePointer++;
-		head->cdr = Parser_parser(treePointer); 
-		break;
-
-	case '/' :
-		head->celltype = T_DIV;
-		treePointer++;
-		head->cdr = Parser_parser(treePointer); 
-		break;
-
-	case '<' :
-		head->celltype = T_LT;
-		treePointer++;
-		head->cdr = Parser_parser(treePointer);
-		break;
-
-	case '>' :
-		head->celltype = T_GT;
-		treePointer++;
-		head->cdr = Parser_parser(treePointer);
-		break;
-
-	default :
-		if(isdigit(**token)) {
-			head->celltype = T_NUMBER;
-			head->ivalue = strtol(*token, NULL, 10);
-			treePointer++;
-			head->cdr = Parser_parser(treePointer);
-		}else if(isalpha(**token)) {
-			if((strncmp(*token, "if", 3) == 0)) {
-				head->celltype = T_IF;
-				head->svalue = *token;
-				treePointer++;
-				head->cdr = Parser_parser(treePointer);
-			}else if((strncmp(*token, "setq", 5) == 0)) {
-				setq_flag = 1;
-				head->celltype = T_SETQ;
-				treePointer++;
-				head->cdr = Parser_parser(treePointer);
-			}else if((strncmp(*token, "defun", 6) == 0)) {
-				head->celltype = T_DEFUN;
-				defun_flag = ON;
-				treePointer++;
-				head->cdr = Parser_parser(treePointer);
+		case '-' :
+			if(isalnum(*(*token+1))) {
+				path->cdr = new_ConsCell();
+				path = path->cdr;
+				path->celltype = T_NUMBER;
+				path->ivalue = strtol(*token, NULL, 10);
 			}else{
-				if(((**(token-1) == '(') && (defun_flag != ON)) || (strncmp(*(token-1), "defun", 6) == 0)) {
-					head->celltype = T_FUNC;				
-					head->svalue = *token;
-					defun_call = ON;
-					treePointer++;
-					head->cdr = Parser_parser(treePointer);
-				}else if(((**(token-1) == '(') && (defun_call == OFF)) || ((defun_flag == ON) && (**(token-1) != '('))) {
-					head->celltype = T_ARGUMENT;
-					head->svalue = *token;
-					treePointer++;
-					head->cdr = Parser_parser(treePointer);
+				path->car = new_ConsCell();
+				path = path->car;
+				path->celltype = T_SUB;
+			}
+			break;
+
+		case '+' :
+			path->car = new_ConsCell();
+			path = path->car;
+			path->celltype = T_ADD;
+			break;
+
+		case '*' :
+			path->car = new_ConsCell();
+			path = path->car;
+			path->celltype = T_MUL;
+			break;
+
+		case '/' :
+			path->car = new_ConsCell();
+			path = path->car;
+			path->celltype = T_DIV;
+			break;
+
+		case '<' :
+			path->car = new_ConsCell();
+			path = path->car;
+			path->celltype = T_LT;
+			break;
+
+		case '>' :
+			path->car = new_ConsCell();
+			path = path->car;
+			path->celltype = T_GT;
+			break;
+
+		default :
+			if(isdigit(**token)) {
+				path->cdr = new_ConsCell();
+				path = path->cdr;
+				path->celltype = T_NUMBER;
+				path->ivalue = strtol(*token, NULL, 10);
+			}else if(isalpha(**token)) {
+				if((strncmp(*token, "if", 3) == 0)) {
+					path->car = new_ConsCell();
+					path = path->car;
+					path->celltype = T_IF;
+					path->svalue = *token;
+				}else if((strncmp(*token, "setq", 5) == 0)) {
+					setq_flag = ON;
+					path->car = new_ConsCell();
+					path = path->car;
+					path->celltype = T_SETQ;
+				}else if((strncmp(*token, "defun", 6) == 0)) {
+					defun_flag = ON;
+					path->car = new_ConsCell();
+					path = path->car;
+					path->celltype = T_DEFUN;
 				}else{
-					if(defun_flag == ON) {
-						head->celltype = T_FUNC;				
-						head->svalue = *token;
-						treePointer++;
-						head->cdr = Parser_parser(treePointer);
+					if((strncmp(*(token-1), "defun", 6) == 0)) {
+						path->cdr = new_ConsCell();
+						path = path->cdr;
+						path->celltype = T_FUNC;
+						path->svalue = *token;
+						defun_call = ON;
+					}else if(((**(token-1) == '(') && (defun_flag == OFF))) {
+						path->car = new_ConsCell();
+						path = path->car;
+						path->celltype = T_FUNC;
+						path->svalue = *token;
+					}else if(((**(token-1) == '(') && (defun_call == OFF)) || ((defun_flag == ON) && (**(token-1) != '('))) {
+						path->cdr = new_ConsCell();
+						path = path->cdr;
+						path->celltype = T_ARGUMENT;
+						path->svalue = *token;
 					}else{
-						head->celltype = T_STRING;
-						head->svalue = *token;
-						treePointer++;
-						head->cdr = Parser_parser(treePointer);
+						if(defun_flag == ON) {
+							path->car = new_ConsCell();
+							path = path->car;
+							path->celltype = T_FUNC;
+							path->svalue = *token;
+						}else{
+							path->cdr = new_ConsCell();
+							path = path->cdr;
+							path->celltype = T_STRING;
+							path->svalue = *token;
+						}
 					}
 				}
 			}
+			break;
 		}
-		break;
+		token++;
 	}
 	return head;
 }
+
+//ConsCell *Parser_parser(char **token)
+//{
+//	if((*token) == NULL) {
+//		return NULL;
+//	}
+//
+//	ConsCell *head = (ConsCell *)imalloc(sizeof(ConsCell));
+//
+//	switch(**token){
+//	
+//	case '(' :
+//		head->celltype = T_BEGIN;
+//		treePointer++;
+//		head->car = Parser_parser(treePointer);
+//		head->cdr = Parser_parser(treePointer);
+//		break;
+//
+//	case ')' :
+//		head->celltype = T_END;
+//		treePointer++;
+//		break;
+//	   
+//	case '-' :
+//		if(isalnum(*(*token+1))) {
+//			head->celltype = T_NUMBER;
+//			head->ivalue = strtol(*token, NULL, 10);
+//			treePointer++;
+//			head->cdr = Parser_parser(treePointer);
+//
+//		}else{
+//			head->celltype = T_SUB;
+//			treePointer++;
+//			head->cdr = Parser_parser(treePointer);
+//		}
+//		break;
+//
+//	case '+' :
+//		head->celltype = T_ADD;
+//		treePointer++;
+//		head->cdr = Parser_parser(treePointer); 
+//		break;
+//
+//	case '*' :
+//		head->celltype = T_MUL;
+//		treePointer++;
+//		head->cdr = Parser_parser(treePointer); 
+//		break;
+//
+//	case '/' :
+//		head->celltype = T_DIV;
+//		treePointer++;
+//		head->cdr = Parser_parser(treePointer); 
+//		break;
+//
+//	case '<' :
+//		head->celltype = T_LT;
+//		treePointer++;
+//		head->cdr = Parser_parser(treePointer);
+//		break;
+//
+//	case '>' :
+//		head->celltype = T_GT;
+//		treePointer++;
+//		head->cdr = Parser_parser(treePointer);
+//		break;
+//
+//	default :
+//		if(isdigit(**token)) {
+//			head->celltype = T_NUMBER;
+//			head->ivalue = strtol(*token, NULL, 10);
+//			treePointer++;
+//			head->cdr = Parser_parser(treePointer);
+//		}else if(isalpha(**token)) {
+//			if((strncmp(*token, "if", 3) == 0)) {
+//				head->celltype = T_IF;
+//				head->svalue = *token;
+//				treePointer++;
+//				head->cdr = Parser_parser(treePointer);
+//			}else if((strncmp(*token, "setq", 5) == 0)) {
+//				setq_flag = 1;
+//				head->celltype = T_SETQ;
+//				treePointer++;
+//				head->cdr = Parser_parser(treePointer);
+//			}else if((strncmp(*token, "defun", 6) == 0)) {
+//				head->celltype = T_DEFUN;
+//				defun_flag = ON;
+//				treePointer++;
+//				head->cdr = Parser_parser(treePointer);
+//			}else{
+//				if(((**(token-1) == '(') && (defun_flag != ON)) || (strncmp(*(token-1), "defun", 6) == 0)) {
+//					head->celltype = T_FUNC;				
+//					head->svalue = *token;
+//					defun_call = ON;
+//					treePointer++;
+//					head->cdr = Parser_parser(treePointer);
+//				}else if(((**(token-1) == '(') && (defun_call == OFF)) || ((defun_flag == ON) && (**(token-1) != '('))) {
+//					head->celltype = T_ARGUMENT;
+//					head->svalue = *token;
+//					treePointer++;
+//					head->cdr = Parser_parser(treePointer);
+//				}else{
+//					if(defun_flag == ON) {
+//						head->celltype = T_FUNC;				
+//						head->svalue = *token;
+//						treePointer++;
+//						head->cdr = Parser_parser(treePointer);
+//					}else{
+//						head->celltype = T_STRING;
+//						head->svalue = *token;
+//						treePointer++;
+//						head->cdr = Parser_parser(treePointer);
+//					}
+//				}
+//			}
+//		}
+//		break;
+//	}
+//	return head;
+//}
 
 void Parser_Dump(ConsCell *root, int level)
 {
@@ -187,7 +318,6 @@ void Parser_Dump(ConsCell *root, int level)
 	if(root == NULL){
 		fprintf(stderr,"error!\n");
 	}else{
-
 		switch(root->celltype){
 		case T_BEGIN    :
 			if(root->cdr != NULL) {
