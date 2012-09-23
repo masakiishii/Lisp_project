@@ -10,6 +10,7 @@
 #define TOKENSIZE 1024
 #define FREELIST 8
 #define VIRTUALMAChINE_BYTECODE_SIZE 256
+#define MAX_MEMORY_SIZE 8
 #define ON 1
 #define OFF 0
 #define EOL '\0'
@@ -161,7 +162,8 @@ extern int defun_flag;
 extern int defun_call;
 extern int freelist_token_stack;
 extern int freelist_cell_stack;
-
+extern VirtualMachineByteCodeLine *local_cache_register;
+extern Map *virtualmachine_memory[MAX_MEMORY_SIZE];
 //=====================<<<Main>>>=======================================
 int main(int argc, char **argv);
 void ilisp_shell(void);

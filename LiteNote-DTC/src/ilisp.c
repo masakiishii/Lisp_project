@@ -33,6 +33,7 @@ void ilisp_shell(void)
 
 void ilisp_script(char **input)
 {
+	int i = 0;
 	char line[256] = {0};
 	char **tmp_token;
 	ConsCell *tmp_cell;
@@ -63,9 +64,16 @@ void ilisp_script(char **input)
 		p->delete(tmp_cell, p);
 	
 	}
+	while(virtualmachine_memory[i] != NULL) {
+		free((char *)virtualmachine_memory[i]->key);
+		free(virtualmachine_memory[i]);
+		i++;
+	}
 	fclose(fp);
 	free(t);
 	free(p);
+	free(local_cache_register->code);
+	free(local_cache_register);
 	free(func->code);
 	free(func);
 }

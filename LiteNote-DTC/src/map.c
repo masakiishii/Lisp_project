@@ -1,6 +1,5 @@
 #include <ilisp.h>
 
-#define MAX_MEMORY_SIZE 8
 Map *virtualmachine_memory[MAX_MEMORY_SIZE] = {NULL};
 static int virtualmachine_memory_index = 0;
 
