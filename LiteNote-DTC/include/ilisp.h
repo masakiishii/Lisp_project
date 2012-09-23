@@ -69,7 +69,8 @@ typedef enum OpCode {
 	OPCALL,
 	OPFASTCALL, //specialized instruction
 	OPiSUBC,    //specialized instruction
-	OPiLTC,    //specialized instruction
+	OPiLTC,     //specialized instruction
+	OPLJMPC,    //specialized instruction
 	OPRET
 } OpCode;
 

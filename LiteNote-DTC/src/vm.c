@@ -89,6 +89,9 @@ void VirtualMachine_ByteCode_Dump(ByteCode *vmcode)
 	case OPiLTC:
 		DBG_P("OPiLTC :");
 		break;
+	case OPLJMPC:
+		DBG_P("OPLJMPC :");
+		break;
 	case OPRET :
 		DBG_P("OPRET :");
 		break;
@@ -112,7 +115,7 @@ int VirtualMachine_DirectThreadedCode_Run(VirtualMachineByteCodeLine *op, int *s
 	static const void *VM_Instruction_Table[] = {
 		&&OPLOAD, &&OPADD, &&OPSUB, &&OPMUL, &&OPDIV,
 		&&OPLT,  &&OPGT, &&OPIF, &&OPJMP, &&OPMOV, 
-		&&OPCALL, &&OPFASTCALL,&&OPiSUBC,&&OPiLTC, &&OPRET
+		&&OPCALL, &&OPFASTCALL, &&OPiSUBC, &&OPiLTC, &&OPLJMPC, &&OPRET
 	};
 
 	//while(op_pointer->op != OPRET) {
@@ -205,6 +208,12 @@ OPiLTC:
 	Code_Dump(opcode);
 	(Reg[opcode->reg1] < opcode->data2) ? (Reg[opcode->reg0] = 1) : (Reg[opcode->reg0] = 0);
 	opcode++;
+	goto OP_NEXT;
+
+OPLJMPC:
+	Code_Dump(opcode);
+	Reg[opcode->reg0] = opcode->data1;
+	opcode = opcode->pc2;
 	goto OP_NEXT;
 
 OPRET:

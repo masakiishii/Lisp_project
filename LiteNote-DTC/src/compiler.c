@@ -248,11 +248,19 @@ void Compiler_compileToFastCode(VirtualMachineByteCodeLine *vmcode)
 			break;
 
 		case OPJMP:
+			if(code[i-1].op == OPLOAD) {
+				code[i].op = OPLJMPC;
+				code[i].reg0 = code[i - 1].reg0;
+				code[i].data1 = code[i - 1].data1;
+				vmcode->remove(vmcode, i - 1);
+				i -= 1;
+				remove_counter += 1;
+			}
 			jmp_index = i;
 			break;
 
 		case OPIF :
-			code[i].pc2 -= remove_counter;
+			code[i].pc2 -= (remove_counter+1); //JMP -> OPLJMPC 
 			break;
 
 		default:
